@@ -5,11 +5,10 @@ Coherent Optical Systems Architecture and Algorithms](https://www.amazon.com.br/
 
 ## Sumário do Material a ser Estudado
 
-Cap 2. The Optical Transmitter \
-Cap 3. The Optical Channel \
-Cap 4. The Receiver Front-End,
-Orthogonalization, and Deskew \
-Cap 5. Equalization \
-Cap 6. Carrier Recovery \
-Cap 7. Clock Recovery \
-Cap 8. PerformanceEvaluation
+**Cap 2**. The Optical Transmitter \
+**Cap 3**. The Optical Channel \
+**Cap 4**. The Receiver Front-End, Orthogonalization, and Deskew \
+**Cap 5**. Equalization \
+**Cap 6**. Carrier Recovery \
+**Cap 7**. Clock Recovery \
+**Cap 8**. PerformanceEvaluation
