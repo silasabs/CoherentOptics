@@ -19,4 +19,4 @@ Navegue entre os principais tópicos de comunicações ópticas que são abordad
 
 ## Observações
 
-O material utiliza o [OptiCommPy](https://github.com/edsonportosilva/OptiCommPy) para implementar simulações de modelos físicos e tarefas de processamento digital de sinais.s
+O material utiliza o [OptiCommPy](https://github.com/edsonportosilva/OptiCommPy) para implementar simulações de modelos físicos e tarefas de processamento digital de sinais
