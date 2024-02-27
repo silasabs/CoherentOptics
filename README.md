@@ -8,7 +8,7 @@ Coherent Optical Systems Architecture and Algorithms](https://www.amazon.com.br/
 Navegue entre os principais tópicos de comunicações ópticas que são abordados através de anotações de aulas, simulações e exemplos práticos.
 
 **Chapter 2:** [The Optical Transmitter](https://github.com/silasabs/CoherentOptics/blob/main/Jupyter/Transmissores%20Opticos.ipynb)\
-**Chapter 3:** The Optical Channel \
+**Chapter 3:** [The Optical Channel](https://github.com/silasabs/CoherentOptics/blob/main/Jupyter/Canal%20%C3%93ptico.ipynb) \
 **Chapter 4:** The Receiver Front-End, Orthogonalization, and Deskew \
 **Chapter 5:** Equalization \
 **Chapter 6:** Carrier Recovery \
