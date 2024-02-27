@@ -9,7 +9,7 @@ As anotações foram realizadas com o intuito de facilitar a compreensão dos co
 
 Navegue entre os principais tópicos de comunicações ópticas que são abordados através de anotações de aulas, simulações e exemplos práticos, disponibilizados em cadernos jupyter.
 
-**Chapter 2:** [The Optical Transmitter](https://github.com/silasabs/CoherentOptics/blob/main/Jupyter/Transmissores%20Opticos.ipynb)\
+**Chapter 2:** [The Optical Transmitter](https://github.com/silasabs/CoherentOptics/blob/main/Jupyter/Transmissores%20%C3%93pticos.ipynb)\
 **Chapter 3:** [The Optical Channel](https://github.com/silasabs/CoherentOptics/blob/main/Jupyter/Canal%20%C3%93ptico.ipynb) \
 **Chapter 4:** The Receiver Front-End, Orthogonalization, and Deskew \
 **Chapter 5:** Equalization \
