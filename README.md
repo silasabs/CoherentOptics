@@ -17,6 +17,8 @@ Navegue entre os principais tópicos de comunicações ópticas coerentes que s�
 **Chapter 7:** Clock Recovery \
 **Chapter 8:** Performance Evaluation
 
+Acesse as implementações encontradas no livro de referência em [/darli2py](https://github.com/silasabs/CoherentOptics/tree/main/darli2py)
+
 ## Observações
 
 O material utiliza o [OptiCommPy](https://github.com/edsonportosilva/OptiCommPy) para implementar simulações de modelos físicos e tarefas de processamento digital de sinais.
