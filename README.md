@@ -12,7 +12,7 @@ Navegue entre os principais tópicos de comunicações ópticas coerentes que s�
 **Chapter 2:** [The Optical Transmitter](https://github.com/silasabs/CoherentOptics/blob/main/Jupyter/Optical%20Transmitters.ipynb)\
 **Chapter 3:** [The Optical Channel](https://github.com/silasabs/CoherentOptics/blob/main/Jupyter/Optical%20Channel.ipynb) \
 **Chapter 4:** [The Receiver Front-End, Orthogonalization, and Deskew](https://github.com/silasabs/CoherentOptics/blob/main/Jupyter/Receiver%20Front-End.ipynb) \
-**Chapter 5:** Equalization \
+**Chapter 5:** [Equalization](https://github.com/silasabs/CoherentOptics/blob/main/Jupyter/Equalization.ipynb) \
 **Chapter 6:** Carrier Recovery \
 **Chapter 7:** Clock Recovery \
 **Chapter 8:** Performance Evaluation
