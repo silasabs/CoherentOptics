@@ -113,7 +113,7 @@ def lms(u, d, taps, mu):
     # Execulta a filtragem adaptativa
     for n in range(N):
 
-        # janela deslizante para valores do sinal recebido
+        # janela deslizante correspondente a ordem do filtro
         x = np.flipud(u[n:n+taps])
 
         # calcula a saída no instante n
