@@ -107,9 +107,10 @@ def lms(u, d, taps, mu):
     # determina um filtro real ou complexo
     dtype = u.dtype
 
-    y = np.zeros(N, dtype=dtype)     # saída do filtro
-    e = np.zeros(N, dtype=dtype)     # sinal de erro
-    w = np.zeros(taps, dtype=dtype)  # coeficientes iniciais do filtro.
+    y   = np.zeros(N, dtype=dtype)     # saída do filtro
+    e   = np.zeros(N, dtype=dtype)     # sinal de erro
+    mse = np.zeros(N, dtype=dtype)
+    w   = np.zeros(taps, dtype=dtype)  # coeficientes iniciais do filtro.
 
     squaredError = np.zeros(N, dtype=dtype)   # erro quadrático médio
 
@@ -130,7 +131,8 @@ def lms(u, d, taps, mu):
 
         # calcula o erro quadrático
         squaredError[n] = np.abs(e[n]**2)
-    
-    mse = squaredError/N
+
+        # obtem o erro quadrático médio
+        mse[n] = np.mean(squaredError[:n])
 
     return y, e, mse, w
