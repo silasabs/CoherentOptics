@@ -98,7 +98,7 @@ def lms(u, d, taps, mu):
         tuple: 
             - np.array: sinal de saída.
             - np.array: sinal de erro.
-            - np.array: erro quadrático médio.
+            - np.array: erro quadrático.
             - np.array: coeficintes do filtro após a convergência.
     """
     # número de iterações para filtragem adaptativa
@@ -109,10 +109,9 @@ def lms(u, d, taps, mu):
 
     y   = np.zeros(N, dtype=dtype)     # saída do filtro
     e   = np.zeros(N, dtype=dtype)     # sinal de erro
-    mse = np.zeros(N, dtype=dtype)
     w   = np.zeros(taps, dtype=dtype)  # coeficientes iniciais do filtro.
 
-    squaredError = np.zeros(N, dtype=dtype)   # erro quadrático médio
+    squaredError = np.zeros(N, dtype=dtype)   # erro quadrático
 
     # Execulta a filtragem adaptativa
     for n in range(N):
@@ -130,9 +129,6 @@ def lms(u, d, taps, mu):
         w += mu * np.conjugate(x) * e[n]
 
         # calcula o erro quadrático
-        squaredError[n] = np.abs(e[n]**2)
+        squaredError[n] = e[n]**2
 
-        # obtem o erro quadrático médio
-        mse[n] = np.mean(squaredError[:n])
-
-    return y, e, mse, w
+    return y, e, squaredError, w
