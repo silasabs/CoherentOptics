@@ -17,7 +17,7 @@ Navegue entre os principais tópicos de comunicações ópticas coerentes que s�
 **Chapter 7:** Clock Recovery \
 **Chapter 8:** Performance Evaluation
 
-Acesse as implementações encontradas no livro de referência em [/darli2py](https://github.com/silasabs/CoherentOptics/tree/main/darli2py)
+Acesse as implementações de diferentes algoritmos descritos no livro de referência em [/algorithms](https://github.com/silasabs/CoherentOptics/tree/main/algorithms)
 
 <br>
 <center>
