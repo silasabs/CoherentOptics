@@ -1,7 +1,5 @@
 import numpy as np
-
-def next_power_of_2(n):
-    return 1 << (int(np.log2(n - 1)) + 1)
+from utils import next_power_of_2
 
 def fft_convolution(x, h):
     """ 
