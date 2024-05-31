@@ -109,7 +109,7 @@ def lms(u, d, taps, mu):
     e = np.zeros(N, dtype=dtype)     # sinal de erro
     w = np.zeros(taps, dtype=dtype)  # coeficientes iniciais do filtro.
 
-    squaredError = np.zeros(N, dtype=dtype)   # erro quadrático
+    err_square = np.zeros(N, dtype=dtype)   # erro quadrático
 
     # Execulta a filtragem adaptativa
     for n in range(N):
@@ -124,9 +124,9 @@ def lms(u, d, taps, mu):
         e[n] = d[n+(taps-1)//2] - y[n]
         
         # calcula os novos coeficientes do filtro
-        w += mu * np.conjugate(x) * e[n]
+        w += mu * np.conj(x) * e[n]
 
         # calcula o erro quadrático
-        squaredError[n] = e[n]**2
+        err_square[n] = e[n]**2
 
-    return y, e, squaredError, w
+    return y, e, err_square, w
