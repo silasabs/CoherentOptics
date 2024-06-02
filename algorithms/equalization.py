@@ -78,7 +78,7 @@ def lms(u, d, taps, mu):
     dtype = u.dtype
     
     # obtém o atraso da filtragem FIR
-    dalay = (taps-1) // 2
+    delay = (taps-1) // 2
 
     y = np.zeros(len(u), dtype=dtype)     # saída do filtro
     e = np.zeros(len(u), dtype=dtype)     # sinal de erro
@@ -96,7 +96,7 @@ def lms(u, d, taps, mu):
         y[n] = np.dot(x, w)
         
         # calcula o erro
-        e[n] = d[n + dalay] - y[n]
+        e[n] = d[n + delay] - y[n]
         
         # calcula os novos coeficientes do filtro
         w += mu * np.conj(x) * e[n]
