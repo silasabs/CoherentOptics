@@ -74,26 +74,29 @@ def lms(u, d, taps, mu):
     # número de iterações para filtragem adaptativa
     N = len(u) - taps + 1
     
-    # determina um filtro real ou complexo
+    # deriva um filtro real ou complexo
     dtype = u.dtype
+    
+    # obtém o atraso da filtragem FIR
+    dalay = (taps-1) // 2
 
-    y = np.zeros(N, dtype=dtype)     # saída do filtro
-    e = np.zeros(N, dtype=dtype)     # sinal de erro
-    w = np.zeros(taps, dtype=dtype)  # coeficientes iniciais do filtro.
+    y = np.zeros(len(u), dtype=dtype)     # saída do filtro
+    e = np.zeros(len(u), dtype=dtype)     # sinal de erro
+    w = np.zeros(taps, dtype=dtype)       # coeficientes iniciais do filtro.
 
-    err_square = np.zeros(N, dtype=dtype)   # erro quadrático
-
+    err_square = np.zeros(len(u), dtype=dtype)   # erro quadrático
+    
     # Execulta a filtragem adaptativa
     for n in range(N):
-
+        
         # janela deslizante correspondente a ordem do filtro
         x = np.flipud(u[n:n+taps])
 
         # calcula a saída no instante n
         y[n] = np.dot(x, w)
         
-        # calcula o erro ajustando o atraso da filtragem FIR
-        e[n] = d[n+(taps-1)//2] - y[n]
+        # calcula o erro
+        e[n] = d[n + dalay] - y[n]
         
         # calcula os novos coeficientes do filtro
         w += mu * np.conj(x) * e[n]
