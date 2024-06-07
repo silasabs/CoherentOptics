@@ -1,57 +1,67 @@
 import numpy as np
-from utils import next_power_of_2, fft_convolution
 
-def overlap_save_convolution(x, h, B, NFFT=None):
-    """ Convolução Overlap-Save de x e h com comprimento de bloco B
-        
-        input:
-            x (np.array): signal de entrada.
-            h (np.array): coeficientes do filtro.
-            B (int)     : comprimento do bloco.
-            NFFT (int)  : comprimento do filtro.
-        output:
-            y np.array: sinal convoluído.
+def overlap_save(x, h, NFFT):
     """
 
-    M = len(x)
-    N = len(h)
+    Implementa a convolução usando o método FFT de sobreposição e salvamento
+    (overlap-and-save).
 
-    if NFFT is None:
-        NFFT = max(B, next_power_of_2(N))
+    Args:
+        x (np.array): sinal de entrada.
+        h (np.array): coeficientes do filtro.
+        NFFT (int): o tamanho da FFT deve ser maior que a ordem do filtro.
+                    De preferência utilize valores em potência de 2 para 
+                    se aproveitar da transformada rápida de Fourier.
+
+    Returns:
+        y_out (np.array): sinal de saída filtrado.
+
+    Referências:
+        [1] Processamento Digital de Sinais Paulo S. R. Diniz Eduardo A. B. da Silva Sergio L. Netto
+        Projeto e Análise de Sistemas. 2º Ed.
+    """
+
+    K = len(h)
+    L = len(x)
+
+    # determina o atraso da filtragem FIR
+    delay = (K - 1) // 2
+    
+    overlap = K - 1
+
+    # obtem a quantidade de blocos de entrada
+    B = np.ceil((L + overlap) / (NFFT - K + 1)).astype(int)
+
+    # realiza o zero pad para K-1 amostras no inicio do sinal 
+    # e compensa o comprimento do último bloco
+    x = np.pad(x, (overlap, NFFT), mode='constant', constant_values=0+0j)
+
+    # preenche h com zeros até o comprimento NFFT
+    h = np.pad(h, (0, NFFT - K), mode='constant', constant_values=0+0j)
+
+    # buffer para os blocos de entrada
+    N = np.zeros((NFFT + delay,), dtype='complex')
+
+    # sinal de saída filtrado
+    y_out = np.zeros((B * (len(N) - overlap)), dtype='complex')
+
+    for m in range(B):
         
-    # Determina o número de blocos de entrada
-    num_input_blocks = np.ceil(M / B).astype(int) \
-                     + np.ceil(NFFT / B).astype(int) - 1
+        step = m * (NFFT - overlap)
+        
+        # janela deslizante que extrai os blocos de entrada de comprimento NFFT.
+        N = x[step:step+NFFT]
 
-    # realiza o zero padding ao sinal x para um múltiplo inteiro de B
-    xp = np.pad(x, (0, num_input_blocks*B - M), mode='constant', constant_values=0+0j)
+        H = np.fft.fft(h)
+        X = np.fft.fft(N)
 
-    output_size = num_input_blocks * B + N - 1
-    y = np.zeros((output_size,), dtype="complex")
-    
-    # Buffer de entrada
-    xw = np.zeros((NFFT,), dtype="complex")
+        # obtém a convolução circular de cada bloco com a responta ao impulso do filtro.
+        y = np.fft.ifft(X * H)
 
-    # Convolução de todos os blocos
-    for n in range(num_input_blocks):
-        # Extraia o enésimo bloco de entrada
-        xb = xp[n*B:n*B+B]
+        # obtém as amostras válidas descartando a sobreposição K-1.
+        y_out[step:step+(NFFT-overlap)] = y[overlap:]
 
-        # Janela deslizante da entrada
-        xw = np.roll(xw, -B)
-        xw[-B:] = xb
-
-        # Convolução rápida por FFT
-        u = fft_convolution(xw, h)
-
-        # Salve as amostras de saída válidas
-        y[n*B:n*B+B] = u[-B:]
-
-    y = y[:M+N-1]
-    
-    # Remove o atraso do filtro FIR
-    start = (N - 1) // 2
-    return y[start:start+M]
+    return y_out[delay:delay+L]
 
 def lms(u, d, taps, mu):
     """ Least mean squares (LMS)
@@ -70,7 +80,11 @@ def lms(u, d, taps, mu):
             - np.array: sinal de erro.
             - np.array: erro quadrático.
             - np.array: coeficintes do filtro após a convergência.
+    
+    Referências:
+        [1] Digital Coherent Optical Systems, Architecture and Algorithms
     """
+
     # número de iterações para filtragem adaptativa
     N = len(u) - taps + 1
     
