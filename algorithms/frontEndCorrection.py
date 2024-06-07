@@ -16,6 +16,9 @@ def gsop(rLn):
     
     Referências:
         [1] Digital Coherent Optical Systems, Architecture and Algorithms. 
+        
+        [2] I. Fatadin, S.J. Savory, D. Ives, Compensation of quadrature imbalance 
+        in an optical QPSK coherent receiver. IEEE Photon. Technol. Lett. 20(20), 1733–1735 (2008)
     """
 
     Rin = np.array([rLn.real, rLn.imag]).T
