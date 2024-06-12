@@ -83,6 +83,8 @@ def lms(u, d, taps, mu):
     
     Referências:
         [1] Digital Coherent Optical Systems, Architecture and Algorithms
+
+        [2] Adaptive Filtering: Algorithms and Practical Implementation
     """
 
     # número de iterações para filtragem adaptativa
