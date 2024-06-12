@@ -16,6 +16,9 @@ def overlap_save(x, h, NFFT):
     Returns:
         y_out (np.array): sinal de saída filtrado.
 
+    Raises:
+        ValueError: caso o tamanho da NFFT seja menor que o comprimento do filtro.
+        
     Referências:
         [1] Processamento Digital de Sinais Paulo S. R. Diniz Eduardo A. B. da Silva Sergio L. Netto
         Projeto e Análise de Sistemas. 2º Ed.
@@ -24,6 +27,9 @@ def overlap_save(x, h, NFFT):
     K = len(h)
     L = len(x)
 
+    if NFFT < K:
+        raise ValueError('NFFT deve ser maior ou igual ao comprimento do filtro')
+    
     # determina o atraso da filtragem FIR
     delay = (K - 1) // 2
     
