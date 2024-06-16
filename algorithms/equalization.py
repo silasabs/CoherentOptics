@@ -144,6 +144,9 @@ def cma(u, constSymb, taps, mu):
             - np.array: sinal de saída.
             - np.array: sinal de erro.
             - np.array: coeficintes do filtro após a convergência.
+    
+    Referências:
+        [1] Adaptive Filtering: Algorithms and Practical Implementation
     """
 
     # Constante relacionada às características da modulação.
