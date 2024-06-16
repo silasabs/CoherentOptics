@@ -127,3 +127,54 @@ def lms(u, d, taps, mu):
         err_square[n] = e[n]**2
 
     return y, e, err_square, w
+
+def cma(u, constSymb, taps, mu):
+    """ Constant-Modulus Algorithm
+
+    Implementação do equalizador de módulo constante.
+
+    Args:
+        u (np.array)        : sinal de entrada unidimensional
+        constSymb (np.array): símbolos da constelação
+        taps (int)          : número de coeficientes do filtro   
+        mu (float)          : tamanho do passo para o CMA
+
+    Returns:
+        tuple: 
+            - np.array: sinal de saída.
+            - np.array: sinal de erro.
+            - np.array: coeficintes do filtro após a convergência.
+    """
+
+    # Constante relacionada às características da modulação.
+    R = np.mean(np.abs(constSymb)**4) / np.mean(np.abs(constSymb)**2)
+    
+    # Número de iterações para filtragem adaptativa
+    N = len(u) - taps + 1
+    
+    # Obtém o atraso da filtragem FIR
+    delay = (taps - 1) // 2
+
+    y = np.zeros(len(u), dtype='complex')  # saída do filtro
+    e = np.zeros(len(u), dtype='complex')  # sinal de erro
+
+    # Inicialização dos coeficientes do filtro
+    w = np.zeros(taps, dtype='complex')
+    w[delay] = 1.0  
+
+    # Executa a filtragem adaptativa
+    for n in range(N):
+        
+        # janela deslizante correspondente à ordem do filtro
+        x = np.flipud(u[n:n + taps])
+
+        # calcula a saída no instante n
+        y[n] = np.dot(w, x)
+        
+        # calcula o erro
+        e[n] = y[n] * (np.abs(y[n])**2 - R)
+        
+        # calcula os novos coeficientes do filtro
+        w -= 2 * mu * e[n] * np.conj(x)
+    
+    return y, e, w
