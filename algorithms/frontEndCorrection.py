@@ -4,11 +4,11 @@ from utils import convmtx
 
 def gsop(rLn):
     """ 
-    Esta função realiza a ortogonalização de Gram-Schmidt no sinal 'rLn'
+    Ortogonalização de Gram-Schmidt aplicada ao sinal 'rLn'
 
     Args:
         rLn (np.array): Sinal de entrada no qual será realizada a ortogonalização.
-                        A 1ª e 2ª colunas devem conter as componentes em fase e quadratura
+                        A 1ª e 2ª coluna devem conter as componentes em fase e quadratura
                         do sinal, respectivamente.
     
     Returns:
@@ -24,11 +24,11 @@ def gsop(rLn):
     Rin = np.array([rLn.real, rLn.imag]).T
     
     # Tomando como referência a componente em quadratura:
-    rQOrt = Rin[:,1]/np.sqrt(np.mean(Rin[:,1]**2))
+    rQOrt = Rin[:,1] / np.sqrt(np.mean(Rin[:,1]**2))
 
     # Realiza a ortogonalização    
-    rIInt = Rin[:,0]-np.mean(Rin[:,1]*Rin[:,0])*Rin[:,1]/np.mean(Rin[:,1]**2)
-    rIOrt = rIInt/np.sqrt(np.mean(rIInt**2))
+    rIInt = Rin[:,0] - np.mean(Rin[:,1] * Rin[:,0]) * Rin[:,1] / np.mean(Rin[:,1]**2)
+    rIOrt = rIInt / np.sqrt(np.mean(rIInt**2))
 
     sigRx = rIOrt + 1j*rQOrt
 
@@ -36,7 +36,7 @@ def gsop(rLn):
 
 def Deskew(rIn, SpS, Rs, N, ParamSkew):
     """
-    Esta função realiza o enquadramento no sinal 'rIn' usando um interpolador de Lagrange de ordem 'N'. 
+    Realiza o enquadramento no sinal 'rIn' usando um interpolador de Lagrange de ordem 'N'. 
     O interpolador é implementado por um filtro FIR de comprimento 'N+1'. O desalinhamento temporal 
     é compensado levando em consideração o menor atraso temporal. Os atrasos temporais de cada componente
     (fase e quadratura) são especificados em 'ParamSkew'.
