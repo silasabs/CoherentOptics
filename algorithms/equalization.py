@@ -146,7 +146,9 @@ def cma(u, constSymb, taps, mu):
             - np.array: coeficintes do filtro após a convergência.
     
     Referências:
-        [1] Adaptive Filtering: Algorithms and Practical Implementation
+        [1] Digital Coherent Optical Systems, Architecture and Algorithms
+
+        [2] Adaptive Filtering: Algorithms and Practical Implementation
     """
 
     # Constante relacionada às características da modulação.
@@ -163,7 +165,7 @@ def cma(u, constSymb, taps, mu):
 
     # Inicialização dos coeficientes do filtro
     w = np.zeros(taps, dtype='complex')
-    w[delay] = 1.0  
+    w[delay] = 1  
 
     # Executa a filtragem adaptativa
     for n in range(N):
