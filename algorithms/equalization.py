@@ -88,9 +88,7 @@ def lms(u, d, taps, mu):
             - np.array: coeficintes do filtro após a convergência.
     
     Referências:
-        [1] Digital Coherent Optical Systems, Architecture and Algorithms
-
-        [2] Adaptive Filtering: Algorithms and Practical Implementation
+        [1] Adaptive Filtering: Algorithms and Practical Implementation
     """
 
     # número de iterações para filtragem adaptativa
@@ -146,9 +144,7 @@ def cma(u, constSymb, taps, mu):
             - np.array: coeficintes do filtro após a convergência.
     
     Referências:
-        [1] Digital Coherent Optical Systems, Architecture and Algorithms
-
-        [2] Adaptive Filtering: Algorithms and Practical Implementation
+        [1] Adaptive Filtering: Algorithms and Practical Implementation
     """
 
     # Constante relacionada às características da modulação.
