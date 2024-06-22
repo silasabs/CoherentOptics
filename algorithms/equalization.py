@@ -1,4 +1,5 @@
 import numpy as np
+from numba import njit
 
 def overlap_save(x, h, NFFT):
     """
@@ -178,4 +179,77 @@ def cma(u, constSymb, taps, mu):
         # calcula os novos coeficientes do filtro
         w -= 2 * mu * e[n] * np.conj(x)
     
+    return y, e, w
+
+@njit
+def cmaUp(x, R, taps, lr, indN):
+    """ Constant-Modulus Algorithm
+
+    Implementação do algoritmo de módulo constante para 
+    multiplexação de polarização.
+
+    Args:
+        x (np.array): sinal de entrada de duas colunas.
+        R (int)     : constante relacionada às características da modulação.
+        taps (int)  : número de coeficientes do filtro.
+        lr (float)  : tamanho do passo para a convergência do CMA.
+        indN (int)  : número de cálculos de coeficientes a serem realizados antes da inicialização
+                      adequada dos filtros w2H e w2V
+
+    Raises:
+        ValueError: caso o sinal não possua 2 modos de polarização.
+
+    Returns:
+        tuple:
+            - y (np.array): estimativa dos símbolos.
+            - e (np.array): erro associado a cada modo de polarização.
+            - w (np.array): matriz de coeficientes.
+    
+    Referências:
+        [1] Digital Coherent Optical Systems, Architecture and Algorithms
+    """
+
+    if x.shape[1] != 2:
+        raise ValueError("O sinal deve conter duas polarizações")
+
+    nModes = x.shape[1]
+
+    N = len(x) - taps + 1
+
+    # Obtém o atraso da filtragem FIR
+    delay = (taps - 1) // 2
+
+    y = np.zeros((len(x), nModes), dtype='complex')
+    e = np.zeros((len(x), nModes), dtype='complex') 
+    w = np.zeros((taps, nModes**2), dtype='complex')
+    
+    # single spike initialization
+    w[:,0][delay] = 1
+    #w[:,2][delay] = 1
+    
+    for n in range(N):
+
+        xH = np.flipud(x[:,0][n:n+taps])
+        xV = np.flipud(x[:,1][n:n+taps])
+
+        # calcula a saída do equalizador 2x2
+        y[:,0][n] = np.dot(w[:,0], xV) + np.dot(w[:,1], xH)
+        y[:,1][n] = np.dot(w[:,2], xV) + np.dot(w[:,3], xH)
+
+        # calcula o erro
+        e[:,0][n] = y[:,0][n] * (R - np.abs(y[:,0][n])**2)
+        e[:,1][n] = y[:,1][n] * (R - np.abs(y[:,1][n])**2)
+
+        # atualiza os coeficientes do filtro
+        w[:,0] += lr * np.conj(xV) * e[:,0][n]
+        w[:,2] += lr * np.conj(xV) * e[:,1][n]
+        w[:,1] += lr * np.conj(xH) * e[:,0][n]
+        w[:,3] += lr * np.conj(xH) * e[:,1][n]
+
+        # após a fase de pré-convergência de y[:,0] para indN símbolos
+        # os coeficientes w2V e w2H são computados para convergência de y[:,1]
+        if n == indN:
+            w[:,3] =  np.conj(w[:,0][::-1])
+            w[:,2] = -np.conj(w[:,1][::-1])
+
     return y, e, w
