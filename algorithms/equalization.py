@@ -192,7 +192,7 @@ def mimoAdaptEq(x, constSymb, paramEq):
         paramEq (struct)    : 
             - paramEq.taps: número de coeficientes dos filtros.
             - paramEq.lr  : tamanho do passo para a convergência do algoritmo.
-            - paramEq.alg : 'cma', 'rde'. algoritmos disponíveis para equalização adaptativa.
+            - paramEq.alg : algoritmo de equalização adaptativa a ser usado: ['cma', 'rde'].
             - paramEq.N   : número de cálculos de coeficientes a serem realizados antes da inicialização
                             adequada dos filtros w2H e w2V
 
