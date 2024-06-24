@@ -1,5 +1,5 @@
 import numpy as np
-from numba import njit
+from tqdm.notebook import tqdm
 
 def overlap_save(x, h, NFFT):
     """
@@ -263,7 +263,7 @@ def cmaUp(x, R, nModes, paramEq):
     # single spike initialization
     w[:,0][delay] = 1
     
-    for n in range(N):
+    for n in tqdm(range(N), disable=not (paramEq.progBar)):
 
         xH = np.flipud(x[:,0][n:n+paramEq.taps])
         xV = np.flipud(x[:,1][n:n+paramEq.taps])
@@ -321,7 +321,7 @@ def rdeUp(x, R, nModes, paramEq):
     # single spike initialization
     w[:,0][delay] = 1
     
-    for n in range(N):
+    for n in tqdm(range(N), disable=not (paramEq.progBar)):
 
         xH = np.flipud(x[:,0][n:n+paramEq.taps])
         xV = np.flipud(x[:,1][n:n+paramEq.taps])
