@@ -183,22 +183,24 @@ def cma(u, constSymb, taps, mu):
 
 def mimoAdaptEq(x, constSymb, paramEq):
     """
-
+    
     Equalizador adaptativo MIMO 2x2
 
     Args:
-        x (np.array)        : sinal de entrada com duas polarizações
-        constSymb (np.array): símbolos da constelação normalizados
+        x (np.array)         : sinal de entrada com duas polarizações
+        constSymb (np.array) : símbolos da constelação normalizados
         
-        paramEq (struct)    : 
-            - paramEq.taps: número de coeficientes dos filtros.
+        paramEq (struct): 
+            - paramEq.taps (int)    : número de coeficientes dos filtros.
             
-            - paramEq.lr  : tamanho do passo para a convergência do algoritmo.
+            - paramEq.lr (int)      : tamanho do passo para a convergência do algoritmo.
             
-            - paramEq.alg : algoritmo de equalização adaptativa a ser usado: ['cma', 'rde'].
+            - paramEq.alg (str)     : algoritmo de equalização adaptativa a ser usado: ['cma', 'rde'].
+
+            - paramEq.progBar (bool): visualização da barra de progresso.
             
-            - paramEq.N   : número de cálculos de coeficientes a serem realizados antes da inicialização
-                            adequada dos filtros w2H e w2V
+            - paramEq.N (int)       : número de cálculos de coeficientes a serem realizados antes 
+                                      da inicialização adequada dos filtros w2H e w2V
 
     Raises:
         ValueError: caso o sinal não possua duas polarizações.
