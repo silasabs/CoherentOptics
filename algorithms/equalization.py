@@ -272,7 +272,7 @@ def cmaUp(x, R, nModes, paramEq):
         y[:,0][n] = np.dot(w[:,0], xV) + np.dot(w[:,1], xH)
         y[:,1][n] = np.dot(w[:,2], xV) + np.dot(w[:,3], xH)
 
-        # calcula o erro
+        # calcula e atualiza erro para cada modo de polarização
         e[:,0][n] = y[:,0][n] * (R - np.abs(y[:,0][n])**2)
         e[:,1][n] = y[:,1][n] * (R - np.abs(y[:,1][n])**2)
 
@@ -335,7 +335,7 @@ def rdeUp(x, R, nModes, paramEq):
         R1 = np.min(np.abs(R - np.abs(y[:,0][n])))
         R2 = np.min(np.abs(R - np.abs(y[:,1][n])))
 
-        # calcula o erro
+        # calcula e atualiza erro para cada modo de polarização
         e[:,0][n] = y[:,0][n] * (R1**2 - np.abs(y[:,0][n])**2)
         e[:,1][n] = y[:,1][n] * (R2**2 - np.abs(y[:,1][n])**2)
 
