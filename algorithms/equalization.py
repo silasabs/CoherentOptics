@@ -187,8 +187,8 @@ def mimoAdaptEq(x, constSymb, paramEq):
     Equalizador adaptativo MIMO 2x2
 
     Args:
-        x (np.array)         : sinal de entrada com duas polarizações
-        constSymb (np.array) : símbolos da constelação normalizados
+        x (np.array)         : sinal de entrada com duas polarizações.
+        constSymb (np.array) : símbolos da constelação normalizados.
         
         paramEq (struct): 
             - paramEq.taps (int)    : número de coeficientes dos filtros.
@@ -200,11 +200,11 @@ def mimoAdaptEq(x, constSymb, paramEq):
             - paramEq.progBar (bool): visualização da barra de progresso.
             
             - paramEq.N (int)       : número de cálculos de coeficientes a serem realizados antes 
-                                      da inicialização adequada dos filtros w2H e w2V
+                                      da inicialização adequada dos filtros w2H e w2V.
 
     Raises:
         ValueError: caso o sinal não possua duas polarizações.
-        ValueError: caso o algoritmo seja especificado incorretamente
+        ValueError: caso o algoritmo seja especificado incorretamente.
 
     Returns:
         tuple: 
@@ -283,6 +283,8 @@ def cmaUp(x, R, nModes, paramEq):
         w[:,3] += paramEq.lr * np.conj(xH) * e[:,1][n]
 
         if n == paramEq.N:
+            # Defina a polarização Y como ortogonal a X para evitar a convergência para a mesma polarização 
+            # (evitar a singularidade CMA)
             w[:,3] =  np.conj(w[:,0][::-1])
             w[:,2] = -np.conj(w[:,1][::-1])
 
@@ -344,6 +346,8 @@ def rdeUp(x, R, nModes, paramEq):
         w[:,3] += paramEq.lr * np.conj(xH) * e[:,1][n]
 
         if n == paramEq.N:
+            # Defina a polarização Y como ortogonal a X para evitar a convergência para a mesma polarização 
+            # (evitar a singularidade CMA)
             w[:,3] =  np.conj(w[:,0][::-1])
             w[:,2] = -np.conj(w[:,1][::-1])
 
