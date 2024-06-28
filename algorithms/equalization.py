@@ -234,7 +234,7 @@ def cmaUp(x, R, nModes, paramEq):
     """ Constant-Modulus Algorithm
 
     Implementação do algoritmo de módulo constante para 
-    multiplexação de polarização.
+    multiplexação de polarização 2x2.
 
     Args:
         x (np.array): sinal de entrada.
@@ -294,7 +294,7 @@ def rdeUp(x, R, nModes, paramEq):
     """ Radius-Directed Equalization Algorithm
 
     Implementação do algoritmo de equalização direcionada 
-    ao raio para multiplexação de polarização.
+    ao raio para multiplexação de polarização 2x2.
 
     Args:
         x (np.array): sinal de entrada.
