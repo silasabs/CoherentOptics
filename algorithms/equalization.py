@@ -285,8 +285,8 @@ def cmaUp(x, R, nModes, paramEq):
         w[:,3] += paramEq.lr * np.conj(xH) * e[:,1][n]
 
         if n == paramEq.N:
-            # Defina a polarização Y como ortogonal a X para evitar a convergência para a mesma polarização 
-            # (evitar a singularidade CMA)
+            # Defina a polarização Y como ortogonal a X para evitar 
+            # a convergência para a mesma polarização (evitar a singularidade CMA)
             w[:,3] =  np.conj(w[:,0][::-1])
             w[:,2] = -np.conj(w[:,1][::-1])
 
@@ -348,8 +348,8 @@ def rdeUp(x, R, nModes, paramEq):
         w[:,3] += paramEq.lr * np.conj(xH) * e[:,1][n]
 
         if n == paramEq.N:
-            # Defina a polarização Y como ortogonal a X para evitar a convergência para a mesma polarização 
-            # (evitar a singularidade CMA)
+            # Defina a polarização Y como ortogonal a X para evitar 
+            # a convergência para a mesma polarização (evitar a singularidade CMA)
             w[:,3] =  np.conj(w[:,0][::-1])
             w[:,2] = -np.conj(w[:,1][::-1])
 
