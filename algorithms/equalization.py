@@ -187,21 +187,23 @@ def mimoAdaptEq(x, constSymb, paramEq):
     Equalizador adaptativo MIMO 2x2
 
     Args:
-        x (np.array)         : sinal de entrada com duas polarizações
-        constSymb (np.array) : símbolos da constelação normalizados
+        x (np.array)         : sinal de entrada com duas polarizações.
+        constSymb (np.array) : símbolos da constelação normalizados.
         
         paramEq (struct):
-        
+
             - paramEq.taps (int): número de coeficientes dos filtros.
             
-            - paramEq.lr (int): tamanho do passo para a convergência do algoritmo.
+            - paramEq.lr (int): tamanho do passo para a convergência do algoritmo ['cma', 'rde'].
             
-            - paramEq.alg (str): algoritmo de equalização adaptativa a ser usado: ['cma', 'rde'].
+            - paramEq.alg (str): algoritmo de equalização adaptativa a ser usado: ['cma', 'rde', 'cma-to-rde'].
 
             - paramEq.progBar (bool): visualização da barra de progresso.
             
-            - paramEq.N (int): número de cálculos de coeficientes a serem realizados antes 
-                               da inicialização adequada dos filtros w2H e w2V.
+            - paramEq.N1 (int): número de cálculos de coeficientes a serem realizados antes 
+                                da inicialização adequada dos filtros w2H e w2V.
+            
+            - paramEq.N2 (int): símbolos necessários para troca do equalizador de pre-convergência.
 
     Raises:
         ValueError: caso o sinal não possua duas polarizações.
@@ -226,13 +228,87 @@ def mimoAdaptEq(x, constSymb, paramEq):
         y, e, w = cmaUp(x, R, nModes, paramEq)
     elif paramEq.alg == 'rde':
         y, e, w = rdeUp(x, R, nModes, paramEq)
+    elif paramEq.alg == 'cma-to-rde':
+        y, e, w = cmaUp(x, R, nModes, paramEq, preConv=True)
     else:
         raise ValueError("Algoritmo de equalização especificado incorretamente. \
-                        as opções válidas são: 'cma', 'rde'.")
+                        as opções válidas são: 'cma', 'rde', 'cma-to-rde'.")
     
     return y, e, w
 
-def cmaUp(x, R, nModes, paramEq):
+def rdeUp(x, R, nModes, paramEq, y=None, e=None, w=None, preConv=False):
+    """ Radius-Directed Equalization Algorithm
+    
+    Implementação do algoritmo de equalização direcionada 
+    ao raio para multiplexação de polarização 2x2.
+    
+    Args:
+        x (np.array): sinal de entrada.
+        R (int): constante relacionada às características da modulação.
+        nModes (int): número de polarizações.
+        paramEq (struct): parâmetros do equalizador.
+        y (np.array, optional): sinal de saída da pre-convergência. Defaults to None.
+        e (np.array, optional): sinal de erro da pre-convergência. Defaults to None.
+        w (np.array, optional): matriz de coeficientes de pre-convergência. Defaults to None.
+        preConv (bool, optional): sinaliza um equalizador de pre-convergência. Defaults to False.
+
+    Returns:
+        tuple:
+            - y (np.array): estimativa dos símbolos.
+            - e (np.array): erro associado a cada modo de polarização.
+            - w (np.array): matriz de coeficientes.
+    
+    Referências:
+        [1] Digital Coherent Optical Systems, Architecture and Algorithms
+    """
+    
+    N = len(x) - paramEq.taps + 1
+
+    # Obtém o atraso da filtragem FIR
+    delay = (paramEq.taps - 1) // 2
+    
+    if preConv == False:
+        
+        paramEq.N2 = 0
+
+        y = np.zeros((len(x), nModes), dtype='complex')
+        e = np.zeros((len(x), nModes), dtype='complex') 
+        w = np.zeros((paramEq.taps, nModes**2), dtype='complex')
+        
+        # single spike initialization
+        w[:,0][delay] = 1
+    
+    for n in tqdm(range(paramEq.N2, N), disable=not (paramEq.progBar)):
+
+        xH = np.flipud(x[:,0][n:n+paramEq.taps])
+        xV = np.flipud(x[:,1][n:n+paramEq.taps])
+
+        # calcula a saída do equalizador 2x2
+        y[:,0][n] = np.dot(w[:,0], xV) + np.dot(w[:,1], xH)
+        y[:,1][n] = np.dot(w[:,2], xV) + np.dot(w[:,3], xH)
+
+        R1 = np.min(np.abs(R - np.abs(y[:,0][n])))
+        R2 = np.min(np.abs(R - np.abs(y[:,1][n])))
+
+        # calcula e atualiza erro para cada modo de polarização
+        e[:,0][n] = y[:,0][n] * (R1**2 - np.abs(y[:,0][n])**2)
+        e[:,1][n] = y[:,1][n] * (R2**2 - np.abs(y[:,1][n])**2)
+
+        # atualiza os coeficientes do filtro
+        w[:,0] += paramEq.lr[1] * np.conj(xV) * e[:,0][n]
+        w[:,2] += paramEq.lr[1] * np.conj(xV) * e[:,1][n]
+        w[:,1] += paramEq.lr[1] * np.conj(xH) * e[:,0][n]
+        w[:,3] += paramEq.lr[1] * np.conj(xH) * e[:,1][n]
+
+        if n == paramEq.N1:
+            # Defina a polarização Y como ortogonal a X para evitar 
+            # a convergência para a mesma polarização (evitar a singularidade CMA)
+            w[:,3] =  np.conj(w[:,0][::-1])
+            w[:,2] = -np.conj(w[:,1][::-1])
+        
+    return y, e, w
+
+def cmaUp(x, R, nModes, paramEq, preConv=False):
     """ Constant-Modulus Algorithm
 
     Implementação do algoritmo de módulo constante para 
@@ -241,7 +317,9 @@ def cmaUp(x, R, nModes, paramEq):
     Args:
         x (np.array): sinal de entrada.
         R (int)     : constante relacionada às características da modulação.
-        nModes      : número de polarizações.
+        nModes (int): número de polarizações.
+        paramEq (struct): parâmetros do equalizador.
+        preConv (bool, optional): sinaliza um equalizador de pre-convergência. Defaults to False.
 
     Returns:
         tuple:
@@ -279,78 +357,21 @@ def cmaUp(x, R, nModes, paramEq):
         e[:,1][n] = y[:,1][n] * (R - np.abs(y[:,1][n])**2)
 
         # atualiza os coeficientes do filtro
-        w[:,0] += paramEq.lr * np.conj(xV) * e[:,0][n]
-        w[:,2] += paramEq.lr * np.conj(xV) * e[:,1][n]
-        w[:,1] += paramEq.lr * np.conj(xH) * e[:,0][n]
-        w[:,3] += paramEq.lr * np.conj(xH) * e[:,1][n]
+        w[:,0] += paramEq.lr[0] * np.conj(xV) * e[:,0][n]
+        w[:,2] += paramEq.lr[0] * np.conj(xV) * e[:,1][n]
+        w[:,1] += paramEq.lr[0] * np.conj(xH) * e[:,0][n]
+        w[:,3] += paramEq.lr[0] * np.conj(xH) * e[:,1][n]
 
-        if n == paramEq.N:
+        if n == paramEq.N1:
             # Defina a polarização Y como ortogonal a X para evitar 
             # a convergência para a mesma polarização (evitar a singularidade CMA)
             w[:,3] =  np.conj(w[:,0][::-1])
             w[:,2] = -np.conj(w[:,1][::-1])
-
-    return y, e, w
-
-def rdeUp(x, R, nModes, paramEq):
-    """ Radius-Directed Equalization Algorithm
-
-    Implementação do algoritmo de equalização direcionada 
-    ao raio para multiplexação de polarização 2x2.
-
-    Args:
-        x (np.array): sinal de entrada.
-        R (int)     : constante relacionada às características da modulação.
-        nModes      : número de polarizações.
-                      
-    Returns:
-        tuple:
-            - y (np.array): estimativa dos símbolos.
-            - e (np.array): erro associado a cada modo de polarização.
-            - w (np.array): matriz de coeficientes.
+        
+        if preConv and n == paramEq.N2:
+            break
     
-    Referências:
-        [1] Digital Coherent Optical Systems, Architecture and Algorithms
-    """
-    
-    N = len(x) - paramEq.taps + 1
-
-    # Obtém o atraso da filtragem FIR
-    delay = (paramEq.taps - 1) // 2
-
-    y = np.zeros((len(x), nModes), dtype='complex')
-    e = np.zeros((len(x), nModes), dtype='complex') 
-    w = np.zeros((paramEq.taps, nModes**2), dtype='complex')
-    
-    # single spike initialization
-    w[:,0][delay] = 1
-    
-    for n in tqdm(range(N), disable=not (paramEq.progBar)):
-
-        xH = np.flipud(x[:,0][n:n+paramEq.taps])
-        xV = np.flipud(x[:,1][n:n+paramEq.taps])
-
-        # calcula a saída do equalizador 2x2
-        y[:,0][n] = np.dot(w[:,0], xV) + np.dot(w[:,1], xH)
-        y[:,1][n] = np.dot(w[:,2], xV) + np.dot(w[:,3], xH)
-
-        R1 = np.min(np.abs(R - np.abs(y[:,0][n])))
-        R2 = np.min(np.abs(R - np.abs(y[:,1][n])))
-
-        # calcula e atualiza erro para cada modo de polarização
-        e[:,0][n] = y[:,0][n] * (R1**2 - np.abs(y[:,0][n])**2)
-        e[:,1][n] = y[:,1][n] * (R2**2 - np.abs(y[:,1][n])**2)
-
-        # atualiza os coeficientes do filtro
-        w[:,0] += paramEq.lr * np.conj(xV) * e[:,0][n]
-        w[:,2] += paramEq.lr * np.conj(xV) * e[:,1][n]
-        w[:,1] += paramEq.lr * np.conj(xH) * e[:,0][n]
-        w[:,3] += paramEq.lr * np.conj(xH) * e[:,1][n]
-
-        if n == paramEq.N:
-            # Defina a polarização Y como ortogonal a X para evitar 
-            # a convergência para a mesma polarização (evitar a singularidade CMA)
-            w[:,3] =  np.conj(w[:,0][::-1])
-            w[:,2] = -np.conj(w[:,1][::-1])
+    if preConv:
+        y, e, w = rdeUp(x, R, nModes, paramEq, y, e, w, preConv=True)
 
     return y, e, w
