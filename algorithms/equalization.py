@@ -203,7 +203,8 @@ def mimoAdaptEq(x, constSymb, paramEq):
             - paramEq.N1 (int): número de cálculos de coeficientes a serem realizados antes 
                                 da inicialização adequada dos filtros w2H e w2V.
             
-            - paramEq.N2 (int): símbolos necessários para troca do equalizador de pre-convergência.
+            - paramEq.N2 (int): número de cálculos de coeficientes a serem realizados antes de mudar
+                                de CMA para RDE
 
     Raises:
         ValueError: caso o sinal não possua duas polarizações.
