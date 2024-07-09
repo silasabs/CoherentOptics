@@ -194,7 +194,7 @@ def mimoAdaptEq(x, constSymb, paramEq):
 
             - paramEq.taps (int): número de coeficientes dos filtros.
             
-            - paramEq.lr (int): tamanho do passo para a convergência do algoritmo ['cma', 'rde'].
+            - paramEq.lr (float): tamanho do passo para a convergência do algoritmo ['cma', 'rde'].
             
             - paramEq.alg (str): algoritmo de equalização adaptativa a ser usado: ['cma', 'rde', 'cma-to-rde'].
 
