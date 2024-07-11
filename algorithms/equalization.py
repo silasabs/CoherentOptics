@@ -373,7 +373,7 @@ def cmaUp(x, R, nModes, paramEq, preConv=False):
             break
     
     if preConv:
-        w = w / np.max(np.abs(w))
+        w = w/np.max(np.abs(w))
         y, e, w = rdeUp(x, R, nModes, paramEq, y, e, w, preConv=True)
 
     return y, e, w
