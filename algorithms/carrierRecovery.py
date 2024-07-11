@@ -36,7 +36,7 @@ def fourthPower(sigRx, Fs, plotSpectrum=False):
         # Inferir o valor máximo na frequência
         indFO = np.argmax(np.abs(fourth_power))
         
-        # Obtenha Delta f
+        # Compense o deslocamento de frequência
         indFO = lenFreq[indFO]/4       
         
         # Compense o deslocamento de frequência
