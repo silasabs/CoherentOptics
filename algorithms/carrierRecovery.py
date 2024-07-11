@@ -34,7 +34,7 @@ def fourthPower(sigRx, Fs, plotSpectrum=False):
         # Elevar a quarta potência e aplica a FFT
         fourth_power = np.fft.fft(sigRx[:, indMode]**4)
 
-        # Inferir o valor máximo na frequência
+        # Inferir o índice de valor máximo na frequência
         indFO = np.argmax(np.abs(fourth_power))
         
         # Obtenha a estimativa do deslocamento de frequência
@@ -43,7 +43,7 @@ def fourthPower(sigRx, Fs, plotSpectrum=False):
         # Compense o deslocamento de frequência
         sigRx[:, indMode] *= np.exp(-1j * 2 * np.pi * indFO * time)
     
-    # Plote o espectro de um dos modos.
+    # Plote o espectro da quarta potência de um dos modos.
     if plotSpectrum:
         plot4thPower(sigRx, axisFreq)
         
