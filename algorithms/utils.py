@@ -1,5 +1,6 @@
 import numpy as np
 import scipy as sp
+import matplotlib.pyplot as plt
 
 def convmtx(h, N):
     """
@@ -14,3 +15,20 @@ def convmtx(h, N):
     """
     H = sp.linalg.toeplitz(np.hstack((h, np.zeros(N-1))), np.zeros(N))
     return H.T
+
+def plot4thPower(sigRx, axisFreq):
+    """
+
+    Plote o espectro da quarta potência do sinal sigRx
+    em dB.
+    
+    Args:
+        sigRx (_type_): sinal de entrada.
+        axisFreq (_type_): eixo de frequências.
+    """
+    
+    plt.plot(axisFreq, 10*np.log10(np.abs(np.fft.fft(sigRx[:, 0]**4))), label=r"$|FFT(s[k]^4)|[dB]$")
+    plt.ylabel('Amplitude [dB]')
+    plt.xlabel(r'$f$')
+    plt.legend()
+    plt.grid()
