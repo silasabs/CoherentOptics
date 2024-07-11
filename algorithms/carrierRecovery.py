@@ -1,4 +1,5 @@
 import numpy as np
+from utils import plot4thPower
 import matplotlib.pyplot as plt
 
 def fourthPower(sigRx, Fs, plotSpectrum=False):
@@ -24,7 +25,7 @@ def fourthPower(sigRx, Fs, plotSpectrum=False):
         sigRx = sigRx.reshape(len(sigRx), 1)
     
     NFFT    = sigRx.shape[0]
-    lenFreq = Fs * np.fft.fftfreq(NFFT)
+    axisFreq = Fs * np.fft.fftfreq(NFFT)
     
     time = np.arange(0, sigRx.shape[0]) * 1/Fs
 
@@ -37,17 +38,13 @@ def fourthPower(sigRx, Fs, plotSpectrum=False):
         indFO = np.argmax(np.abs(fourth_power))
         
         # Obtenha a estimativa do deslocamento de frequência
-        indFO = lenFreq[indFO]/4       
+        indFO = axisFreq[indFO]/4       
         
         # Compense o deslocamento de frequência
         sigRx[:, indMode] *= np.exp(-1j * 2 * np.pi * indFO * time)
     
     # Plote o espectro de um dos modos.
     if plotSpectrum:
-        plt.plot(lenFreq, 10*np.log10(np.abs(np.fft.fft(sigRx[:, 0]**4))), label=r"$|FFT(s[k]^4)|[dB]$")
-        plt.ylabel('Amplitude [dB]')
-        plt.xlabel(r'$f$')
-        plt.legend()
-        plt.grid()
+        plot4thPower(sigRx, axisFreq)
         
     return sigRx, indFO
