@@ -24,7 +24,7 @@ def fourthPower(sigRx, Fs, plotSpectrum=False):
     except IndexError:
         sigRx = sigRx.reshape(len(sigRx), 1)
     
-    NFFT    = sigRx.shape[0]
+    NFFT     = sigRx.shape[0]
     axisFreq = Fs * np.fft.fftfreq(NFFT)
     
     time = np.arange(0, sigRx.shape[0]) * 1/Fs
