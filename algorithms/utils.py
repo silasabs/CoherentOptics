@@ -23,11 +23,11 @@ def plot4thPower(sigRx, axisFreq):
     em dB.
     
     Args:
-        sigRx (_type_): sinal de entrada.
-        axisFreq (_type_): eixo de frequências.
+        sigRx (np.array): sinal de entrada.
+        axisFreq (np.array): eixo de frequências.
     """
     
-    plt.plot(axisFreq, 10*np.log10(np.abs(np.fft.fft(sigRx[:, 0]**4))), label=r"$|FFT(s[k]^4)|[dB]$")
+    plt.plot(axisFreq, 10*np.log10(np.abs(np.fft.fft(sigRx[:, 0]**4))), label=r"$|FFT(s[k]^4)|$")
     plt.ylabel('Amplitude [dB]')
     plt.xlabel(r'$f$')
     plt.legend()
