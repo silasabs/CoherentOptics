@@ -17,6 +17,9 @@ def fourthPower(sigRx, Fs, plotSpectrum=False):
         tuple: 
             - np.array: sinal compensado.
             - float: estimativa do deslocamento de frequência.
+    
+    Referências:
+        [1] Digital Coherent Optical Systems, Architecture and Algorithms
     """
     
     try:
