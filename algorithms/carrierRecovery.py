@@ -4,22 +4,29 @@ import matplotlib.pyplot as plt
 
 def fourthPower(sigRx, Fs, plotSpectrum=False):
     """
-    
     Compensa o deslocamento de frequência utilizando o método
     de quarta potência.
-    
-    Args:
-        sigRx (np.array): sinal a ser compensado.
-        Fs (int): taxa de amostragem.
-        plotSpectrum (bool, optional): retorna o espectro do sinal em quarta potência. Defaults to False.
 
-    Returns:
-        tuple: 
-            - np.array: sinal compensado.
-            - float: estimativa do deslocamento de frequência.
+    Parameters
+    ----------
+    sigRx : np.array
+        Sinal a ser compensado.
+
+    Fs : int
+        taxa de amostragem.
+
+    plotSpectrum : bool, optional
+        Retorna o espectro do sinal em quarta potência, by default False
+
+    Returns
+    -------
+    tuple
+        - sigRx (np.array): Sinal compensado.
+        - indFO (float): Estimativa do deslocamento de frequência.
     
-    Referências:
-        [1] Digital Coherent Optical Systems, Architecture and Algorithms
+    Referências
+    -----------
+    [1] Digital Coherent Optical Systems, Architecture and Algorithms
     """
     
     try:

@@ -9,7 +9,7 @@ def convmtx(h, N):
     Parameters
     ----------
     h : np.array
-        matriz de entrada, especificado como linha ou coluna.
+        Matriz de entrada, especificado como linha ou coluna.
     
     N : int
         Comprimento do vetor a ser convoluído, especificado como um número inteiro positivo.
@@ -25,15 +25,17 @@ def convmtx(h, N):
 
 def plot4thPower(sigRx, axisFreq):
     """
+    Plote o espectro da quarta potência do sinal sigRx em dB.
 
-    Plote o espectro da quarta potência do sinal sigRx
-    em dB.
-    
-    Args:
-        sigRx (np.array): sinal de entrada.
-        axisFreq (np.array): eixo de frequências.
+    Parameters
+    ----------
+    sigRx : np.array
+        Sinal de entrada.
+
+    axisFreq : np.array
+        Eixo de frequências.
     """
-    
+
     plt.plot(axisFreq, 10*np.log10(np.abs(np.fft.fft(sigRx[:, 0]**4))), label=r"$|FFT(s[k]^4)|$")
     plt.ylabel('Amplitude [dB]')
     plt.xlabel(r'$f$')

@@ -3,27 +3,30 @@ import scipy as sp
 from utils import convmtx
 
 def gsop(rLn):
-    """ 
-    Ortogonalização de Gram-Schmidt aplicada ao sinal 'rLn'
+    """
+    Ortogonalização de Gram-Schmidt
 
-    Args:
-        rLn (np.array): Sinal de entrada no qual será realizada a ortogonalização.
-                        A 1ª e 2ª coluna devem conter as componentes em fase e quadratura
-                        do sinal, respectivamente.
+    Parameters
+    ----------
+    rLn : np.array
+        Sinal de entrada no qual será realizada a ortogonalização.
+
+    Returns
+    -------
+    np.array
+       sigRx: Sinal após ortogonalização de Gram-Schmidt.
     
-    Returns:
-        sigRx (np.array): Sinal após ortogonalização de Gram-Schmidt.
-    
-    Referências:
-        [1] Digital Coherent Optical Systems, Architecture and Algorithms. 
+    Referências
+    -----------
+    [1] Digital Coherent Optical Systems, Architecture and Algorithms. 
         
-        [2] I. Fatadin, S.J. Savory, D. Ives, Compensation of quadrature imbalance 
-        in an optical QPSK coherent receiver. IEEE Photon. Technol. Lett. 20(20), 1733–1735 (2008)
+    [2] I. Fatadin, S.J. Savory, D. Ives, Compensation of quadrature imbalance 
+    in an optical QPSK coherent receiver. IEEE Photon. Technol. Lett. 20(20), 1733–1735 (2008)
     """
 
     Rin = np.array([rLn.real, rLn.imag]).T
     
-    # Tomando como referência a componente em quadratura:
+    # Tomando como referência a componente em quadratura
     rQOrt = Rin[:,1] / np.sqrt(np.mean(Rin[:,1]**2))
 
     # Realiza a ortogonalização    
@@ -37,28 +40,37 @@ def gsop(rLn):
 def Deskew(rIn, SpS, Rs, N, ParamSkew):
     """
     Realiza o enquadramento no sinal 'rIn' usando um interpolador de Lagrange de ordem 'N'. 
-    O interpolador é implementado por um filtro FIR de comprimento 'N+1'. O desalinhamento temporal 
-    é compensado levando em consideração o menor atraso temporal. Os atrasos temporais de cada componente
-    (fase e quadratura) são especificados em 'ParamSkew'.
+    O desalinhamento temporal é compensado levando em consideração o menor atraso temporal. 
+    Os atrasos temporais de cada componente (fase e quadratura) são especificados em 'ParamSkew'.
 
-    Args:
-        rIn (np.array): Sinal de entrada após o ADC no qual o enquadramento será realizado.
-        SpS (int): Amostras por símbolo.
-        Rs (int): Taxa de símbolos [símbolo/s]
-        N (int): Ordem do polinômio de interpolação Lagrangeana.
-        
-        ParamSkew (struct): Especifica o atraso temporal (em segundos) para cada componente do sinal de entrada.
-            
-            - ParamSkew.TauIV: Atraso temporal para componente em fase.
-            - ParamSkew.TauQV: Atraso temporal para componente em quadratura.
+    Parameters
+    ----------
+    rIn : np.array
+        Sinal de entrada após o ADC no qual o enquadramento será realizado.
 
-    Returns:
-        np.array: Sinal após enquadramento.
+    SpS : int
+        Amostras por símbolo.
+
+    Rs : int
+        Taxa de símbolos [símbolo/s]
+
+    N : int
+        Ordem do polinômio de interpolação Lagrangeana.
+
+    ParamSkew : struct
+        - ParamSkew.TauIV: Atraso temporal para componente em fase.
+        - ParamSkew.TauQV: Atraso temporal para componente em quadratura.
+
+    Returns
+    -------
+    np.array
+        sigRx: Sinal após o enquadramento temporal.
     
-    Referências:
-        [1] Digital Coherent Optical Systems, Architecture and Algorithms
+    Referências
+    -----------
+    [1] Digital Coherent Optical Systems, Architecture and Algorithms
     """
-    
+
     rIn = rIn.reshape(-1)
     In  = np.array([rIn.real, rIn.imag]).T
 
@@ -97,32 +109,44 @@ def Deskew(rIn, SpS, Rs, N, ParamSkew):
 
     return sigRx
 
-def InsertSkew(In, SpS, Rs, ParamSkew):
-    """ 
-    Esta função insere um desalinhamento temporal (inclinação) 
-    entre os componentes em fase e quadratura do sinal 'In'. O sinal 'In' 
-    deve ser o sinal obtido na saída do front-end óptico, logo antes do 'ADC'.
+def InsertSkew(In, SpS, Rs, ParamSkew):    
+    """
+    Insera um desalinhamento temporal (inclinação) entre os componentes em fase e quadratura. 
+
+    Parameters
+    ----------
+    In : np.array
+        Sinal na saída do front-end óptico.
+
+    SpS : int
+        Amostras por símbolo
+
+    Rs : int
+        Taxa de símbolos [símbolo/s]
+
+    ParamSkew : struct
+        Especifica o atraso temporal (em segundos) para cada componente do sinal de entrada.
+        
+        - ParamSkew.TauIV: Atraso temporal para componente em fase.
+        - ParamSkew.TauQV: Atraso temporal para componente em quadratura.
+
+    Returns
+    -------
+    np.array
+        sigRx: Sinal produzido após inserção distorcida.
+    
+    Notes
+    -----
+    O sinal 'In'  deve ser o sinal obtido na saída do front-end óptico, logo antes do 'ADC'.
     Nesta função, um atraso temporal é especificado para cada componente em 'ParamSkew'. 
     O desalinhamento temporal entre os componentes é então aplicado assumindo o 
     atraso temporal mínimo como referência.
 
-    Args:
-        In (np.array): Sinal na saída do front-end óptico.
-        SpS (int): Amostras por símbolo.
-        Rs (int): Taxa de símbolos [símbolo/s]
-        
-        ParamSkew (struct): Especifica o atraso temporal (em segundos) para cada componente do sinal de entrada.
-
-            - ParamSkew.TauIV: Atraso temporal para componente em fase.
-            - ParamSkew.TauQV: Atraso temporal para componente em quadratura.
-            
-    Returns:
-        np.array: Sinal produzido após inserção distorcida.
-
-    Referências:
-        [1] Digital Coherent Optical Systems, Architecture and Algorithms
+    Referências
+    -----------
+    [1] Digital Coherent Optical Systems, Architecture and Algorithms
     """
-    
+
     Rin = np.array([In.real, In.imag]).T
     
     iIV = Rin[:,0]

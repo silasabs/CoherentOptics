@@ -3,25 +3,35 @@ from tqdm.notebook import tqdm
 
 def overlap_save(x, h, NFFT):
     """
-
     Implementa a convolução usando o método FFT de sobreposição e salvamento
     (overlap-and-save).
 
-    Args:
-        x (np.array): sinal de entrada.
-        h (np.array): coeficientes do filtro.
-        NFFT (int): o tamanho da FFT deve ser maior que a ordem do filtro.
-                    De preferência utilize valores em potência de 2 para 
-                    se aproveitar da transformada rápida de Fourier.
+    Parameters
+    ----------
+    x : np.array
+        Sinal de entrada.
 
-    Returns:
-        y_out (np.array): sinal de saída filtrado.
+    h : np.array
+        Coeficientes do filtro.
 
-    Raises:
-        ValueError: caso o tamanho da NFFT seja menor que o comprimento do filtro.
-        
-    Referências:
-        [1] Processamento Digital de Sinais Paulo S. R. Diniz Eduardo A. B. da Silva Sergio L. Netto
+    NFFT : int
+        O tamanho da FFT deve ser maior que a ordem do filtro.
+        De preferência, utilize valores em potência de 2 para 
+        se aproveitar da transformada rápida de Fourier.
+
+    Returns
+    -------
+    np.array
+        y_out: sinal de saída filtrado.
+
+    Raises
+    ------
+    ValueError
+        Caso o tamanho da NFFT seja menor que o comprimento do filtro.
+    
+    Referências
+    -----------
+    [1] Processamento Digital de Sinais Paulo S. R. Diniz Eduardo A. B. da Silva Sergio L. Netto
         Projeto e Análise de Sistemas. 2º Ed.
     """
 
@@ -71,25 +81,34 @@ def overlap_save(x, h, NFFT):
     return y_out[delay:delay+L]
 
 def lms(u, d, taps, mu):
-    """ Least mean squares (LMS)
-    
+    """
     Simples implementação do algoritmo LMS para filtragem adaptativa.
 
-    Args:
-        u (np.array): sinal de entrada unidimensional 
-        d (np.array): sinal de referência unidimensional
-        taps (int)  : número de coeficientes do filtro   
-        mu (float)  : tamanho do passo para o LMS
+    Parameters
+    ----------
+    u : np.array
+        Sinal de entrada unidimensional 
 
-    Returns:
-        tuple: 
-            - np.array: sinal de saída.
-            - np.array: sinal de erro.
-            - np.array: erro quadrático.
-            - np.array: coeficintes do filtro após a convergência.
+    d : np.array
+        Sinal de referência unidimensional
+
+    taps : int
+        Número de coeficientes do filtro  
+
+    mu : float
+        Tamanho do passo para o LMS
+
+    Returns
+    -------
+    tuple:
+        - np.array: sinal de saída.
+        - np.array: sinal de erro.
+        - np.array: erro quadrático.
+        - np.array: coeficintes do filtro após a convergência.
     
-    Referências:
-        [1] Adaptive Filtering: Algorithms and Practical Implementation
+    Referências
+    -----------
+    [1] Adaptive Filtering: Algorithms and Practical Implementation
     """
 
     # número de iterações para filtragem adaptativa
@@ -128,23 +147,32 @@ def lms(u, d, taps, mu):
     return y, e, err_square, w
 
 def cma(u, constSymb, taps, mu):
-    """ Constant-Modulus Algorithm
-
+    """
     Implementação do equalizador de módulo constante.
 
-    Args:
-        u (np.array)        : sinal de entrada unidimensional
-        constSymb (np.array): símbolos da constelação
-        taps (int)          : número de coeficientes do filtro   
-        mu (float)          : tamanho do passo para o CMA
+    Parameters
+    ----------
+    u : np.array
+        Sinal de entrada unidimensional
 
-    Returns:
-        tuple: 
-            - np.array: sinal de saída.
-            - np.array: sinal de erro.
-            - np.array: coeficintes do filtro após a convergência.
-    
-    Referências:
+    constSymb : np.array
+        Símbolos da constelação
+
+    taps : int
+        Número de coeficientes do filtro   
+
+    mu : float
+        tamanho do passo para o CMA
+
+    Returns
+    -------
+    tuple:
+        - np.array: sinal de saída.
+        - np.array: sinal de erro.
+        - np.array: coeficintes do filtro após a convergência.
+
+    Referências
+    -----------
         [1] Adaptive Filtering: Algorithms and Practical Implementation
     """
 
@@ -183,38 +211,45 @@ def cma(u, constSymb, taps, mu):
 
 def mimoAdaptEq(x, constSymb, paramEq):
     """
-
     Equalizador adaptativo MIMO 2x2
 
-    Args:
-        x (np.array)         : sinal de entrada com duas polarizações.
-        constSymb (np.array) : símbolos da constelação normalizados.
+    Parameters
+    ----------
+    x : np.array
+        Sinal de entrada com duas polarizações.
+
+    constSymb : np.array
+        Símbolos da constelação normalizados.
+
+    paramEq : struct
+        - paramEq.taps (int): Número de coeficientes dos filtros.
         
-        paramEq (struct):
+        - paramEq.lr (float): Tamanho do passo para a convergência do algoritmo ['cma', 'rde'].
 
-            - paramEq.taps (int): número de coeficientes dos filtros.
-            
-            - paramEq.lr (float): tamanho do passo para a convergência do algoritmo ['cma', 'rde'].
-            
-            - paramEq.alg (str): algoritmo de equalização adaptativa a ser usado: ['cma', 'rde', 'cma-to-rde'].
+        - paramEq.alg (str): Algoritmo de equalização adaptativa a ser usado: ['cma', 'rde', 'cma-to-rde'].
 
-            - paramEq.progBar (bool): visualização da barra de progresso.
-            
-            - paramEq.N1 (int): número de cálculos de coeficientes a serem realizados antes 
-                                da inicialização adequada dos filtros w2H e w2V.
-            
-            - paramEq.N2 (int): número de cálculos de coeficientes a serem realizados antes de mudar
-                                de CMA para RDE
+        - paramEq.progBar (bool): Visualização da barra de progresso.
 
-    Raises:
-        ValueError: caso o sinal não possua duas polarizações.
-        ValueError: caso o algoritmo seja especificado incorretamente.
+        - paramEq.N1 (int): Número de cálculos de coeficientes a serem realizados antes 
+          da inicialização adequada dos filtros w2H e w2V.
 
-    Returns:
-        tuple: 
-            - y (np.array): estimativa dos símbolos.
-            - e (np.array): erro associado a cada modo de polarização.
-            - w (np.array): matriz de coeficientes.
+        - paramEq.N2 (int): Número de cálculos de coeficientes a serem realizados antes de mudar
+          de CMA para RDE
+
+    Returns
+    -------
+    tuple
+        - y (np.array): estimativa dos símbolos.
+        - e (np.array): erro associado a cada modo de polarização.
+        - w (np.array): matriz de coeficientes.
+
+    Raises
+    ------
+    ValueError
+        Caso o sinal não possua duas polarizações.
+
+    ValueError
+        Caso o algoritmo seja especificado incorretamente.
     """
 
     if x.shape[1] != 2:
@@ -238,29 +273,45 @@ def mimoAdaptEq(x, constSymb, paramEq):
     return y, e, w
 
 def rdeUp(x, R, nModes, paramEq, y=None, e=None, w=None, preConv=False):
-    """ Radius-Directed Equalization Algorithm
-    
-    Implementação do algoritmo de equalização direcionada 
-    ao raio para multiplexação de polarização 2x2.
-    
-    Args:
-        x (np.array): sinal de entrada.
-        R (int): constante relacionada às características da modulação.
-        nModes (int): número de polarizações.
-        paramEq (struct): parâmetros do equalizador.
-        y (np.array, optional): sinal de saída da pre-convergência. Defaults to None.
-        e (np.array, optional): sinal de erro da pre-convergência. Defaults to None.
-        w (np.array, optional): matriz de coeficientes de pre-convergência. Defaults to None.
-        preConv (bool, optional): sinaliza um equalizador de pre-convergência. Defaults to False.
+    """
+    Radius-Directed Equalization Algorithm
 
-    Returns:
-        tuple:
-            - y (np.array): estimativa dos símbolos.
-            - e (np.array): erro associado a cada modo de polarização.
-            - w (np.array): matriz de coeficientes.
+    Parameters
+    ----------
+    x : np.array
+        Sinal de entrada
+
+    R : int
+        Constante relacionada às características da modulação.
+
+    nModes : int
+        Número de polarizações.
+
+    paramEq : struct
+        Parâmetros do equalizador.
+
+    y : np.array, optional
+        Sinal de saída da pre-convergência, by default None
+
+    e : np.array, optional
+        Sinal de erro da pre-convergência, by default None
+
+    w : np.array, optional
+        Matriz de coeficientes de pre-convergência, by default None
+
+    preConv : bool, optional
+        Sinaliza um equalizador de pre-convergência, by default False
+
+    Returns
+    -------
+    tuple
+        - y (np.array): estimativa dos símbolos.
+        - e (np.array): erro associado a cada modo de polarização.
+        - w (np.array): matriz de coeficientes.
     
-    Referências:
-        [1] Digital Coherent Optical Systems, Architecture and Algorithms
+    Referências
+    -----------
+    [1] Digital Coherent Optical Systems, Architecture and Algorithms
     """
     
     N = len(x) - paramEq.taps + 1
@@ -310,26 +361,36 @@ def rdeUp(x, R, nModes, paramEq, y=None, e=None, w=None, preConv=False):
     return y, e, w
 
 def cmaUp(x, R, nModes, paramEq, preConv=False):
-    """ Constant-Modulus Algorithm
+    """
+    Constant-Modulus Algorithm
 
-    Implementação do algoritmo de módulo constante para 
-    multiplexação de polarização 2x2.
+    Parameters
+    ----------
+    x : np.array
+        Sinal de entrada.
 
-    Args:
-        x (np.array): sinal de entrada.
-        R (int)     : constante relacionada às características da modulação.
-        nModes (int): número de polarizações.
-        paramEq (struct): parâmetros do equalizador.
-        preConv (bool, optional): sinaliza um equalizador de pre-convergência. Defaults to False.
+    R : int
+        Constante relacionada às características da modulação.
 
-    Returns:
-        tuple:
-            - y (np.array): estimativa dos símbolos.
-            - e (np.array): erro associado a cada modo de polarização.
-            - w (np.array): matriz de coeficientes.
+    nModes : int
+        Número de polarizações.
+
+    paramEq : struct
+        Parâmetros do equalizador
+
+    preConv : bool, optional
+        Sinaliza um equalizador de pre-convergência, by default False
+
+    Returns
+    -------
+    tuple
+        - y (np.array): estimativa dos símbolos.
+        - e (np.array): erro associado a cada modo de polarização.
+        - w (np.array): matriz de coeficientes.
     
-    Referências:
-        [1] Digital Coherent Optical Systems, Architecture and Algorithms
+    Referências
+    -----------
+    [1] Digital Coherent Optical Systems, Architecture and Algorithms
     """
 
     N = len(x) - paramEq.taps + 1
