@@ -257,22 +257,18 @@ def mimoAdaptEq(x, constSymb, paramEq):
     
     nModes = x.shape[1]
 
-    # constante relacionada às características da modulação
-    R = np.mean(np.abs(constSymb)**4) / np.mean(np.abs(constSymb)**2)
-
     if paramEq.alg == 'cma':
-        y, e, w = cmaUp(x, R, nModes, paramEq)
+        y, e, w = cmaUp(x, constSymb, nModes, paramEq)
     elif paramEq.alg == 'rde':
-        y, e, w = rdeUp(x, R, nModes, paramEq)
+        y, e, w = rdeUp(x, constSymb, nModes, paramEq)
     elif paramEq.alg == 'cma-to-rde':
-        y, e, w = cmaUp(x, R, nModes, paramEq, preConv=True)
+        y, e, w = cmaUp(x, constSymb, nModes, paramEq, preConv=True)
     else:
-        raise ValueError("Algoritmo de equalização especificado incorretamente. \
-                        as opções válidas são: 'cma', 'rde', 'cma-to-rde'.")
+        raise ValueError("Algoritmo de equalização especificado incorretamente.")
     
     return y, e, w
 
-def rdeUp(x, R, nModes, paramEq, y=None, e=None, w=None, preConv=False):
+def rdeUp(x, constSymb, nModes, paramEq, y=None, e=None, w=None, preConv=False):
     """
     Radius-Directed Equalization Algorithm
 
@@ -281,8 +277,8 @@ def rdeUp(x, R, nModes, paramEq, y=None, e=None, w=None, preConv=False):
     x : np.array
         Sinal de entrada
 
-    R : int
-        Constante relacionada às características da modulação.
+    constSymb : np.array
+        símbolos da constelação M-QAM.
 
     nModes : int
         Número de polarizações.
@@ -319,6 +315,9 @@ def rdeUp(x, R, nModes, paramEq, y=None, e=None, w=None, preConv=False):
     # Obtém o atraso da filtragem FIR
     delay = (paramEq.taps - 1) // 2
     
+    # obtem os raios da constelação M-QAM
+    Rrde = np.unique(np.abs(constSymb))
+    
     if preConv == False:
         
         paramEq.N2 = 0
@@ -339,14 +338,14 @@ def rdeUp(x, R, nModes, paramEq, y=None, e=None, w=None, preConv=False):
         y[:,0][n] = np.dot(w[:,0], xV) + np.dot(w[:,1], xH)
         y[:,1][n] = np.dot(w[:,2], xV) + np.dot(w[:,3], xH)
 
-        R1 = np.min(np.abs(R - np.abs(y[:,0][n])))
-        R2 = np.min(np.abs(R - np.abs(y[:,1][n])))
+        R1 = np.argmin(np.abs(Rrde - np.abs(y[:,0][n])))
+        R2 = np.argmin(np.abs(Rrde - np.abs(y[:,1][n])))
 
         # calcula e atualiza erro para cada modo de polarização
-        e[:,0][n] = y[:,0][n] * (R1**2 - np.abs(y[:,0][n])**2)
-        e[:,1][n] = y[:,1][n] * (R2**2 - np.abs(y[:,1][n])**2)
+        e[:,0][n] = y[:,0][n] * (Rrde[R1]**2 - np.abs(y[:,0][n])**2)
+        e[:,1][n] = y[:,1][n] * (Rrde[R2]**2 - np.abs(y[:,1][n])**2)
 
-        # atualiza os coeficientes do filtro
+        # atualiza os coeficientes do equalizador
         w[:,0] += paramEq.lr[1] * np.conj(xV) * e[:,0][n]
         w[:,2] += paramEq.lr[1] * np.conj(xV) * e[:,1][n]
         w[:,1] += paramEq.lr[1] * np.conj(xH) * e[:,0][n]
@@ -360,7 +359,7 @@ def rdeUp(x, R, nModes, paramEq, y=None, e=None, w=None, preConv=False):
         
     return y, e, w
 
-def cmaUp(x, R, nModes, paramEq, preConv=False):
+def cmaUp(x, constSymb, nModes, paramEq, preConv=False):
     """
     Constant-Modulus Algorithm
 
@@ -369,8 +368,8 @@ def cmaUp(x, R, nModes, paramEq, preConv=False):
     x : np.array
         Sinal de entrada.
 
-    R : int
-        Constante relacionada às características da modulação.
+    constSymb : int
+        símbolos da constelação.
 
     nModes : int
         Número de polarizações.
@@ -405,6 +404,9 @@ def cmaUp(x, R, nModes, paramEq, preConv=False):
     # single spike initialization
     w[:,0][delay] = 1
     
+    # constante relacionada às características da modulação para o algoritmo CMA
+    R = np.mean(np.abs(constSymb)**4) / np.mean(np.abs(constSymb)**2)
+    
     for n in tqdm(range(N), disable=not (paramEq.progBar)):
 
         xH = np.flipud(x[:,0][n:n+paramEq.taps])
@@ -435,6 +437,6 @@ def cmaUp(x, R, nModes, paramEq, preConv=False):
     
     if preConv:
         w = w/np.max(np.abs(w))
-        y, e, w = rdeUp(x, R, nModes, paramEq, y, e, w, preConv=True)
+        y, e, w = rdeUp(x, constSymb, nModes, paramEq, y, e, w, preConv=True)
 
     return y, e, w
