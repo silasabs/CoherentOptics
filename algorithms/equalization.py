@@ -1,4 +1,6 @@
 import numpy as np
+from optic.comm.modulation import grayMapping
+from optic.dsp.core import pnorm
 from tqdm.notebook import tqdm
 
 def overlap_save(x, h, NFFT):
@@ -209,7 +211,7 @@ def cma(u, constSymb, taps, mu):
     
     return y, e, w
 
-def mimoAdaptEq(x, constSymb, paramEq):
+def mimoAdaptEq(x, paramEq):
     """
     Equalizador adaptativo MIMO 2x2
 
@@ -234,7 +236,11 @@ def mimoAdaptEq(x, constSymb, paramEq):
           da inicialização adequada dos filtros w2H e w2V.
 
         - paramEq.N2 (int): Número de cálculos de coeficientes a serem realizados antes de mudar
-          de CMA para RDE
+          de CMA para 
+        
+        - paramEq.M (int): Ordem do esquema de modulação.
+        
+        - paramEq.constType (str): Esquema de modulação. M-QAM or PSK
 
     Returns
     -------
@@ -257,6 +263,11 @@ def mimoAdaptEq(x, constSymb, paramEq):
     
     nModes = x.shape[1]
 
+    # obtem os símbolos da constelação
+    constSymb = grayMapping(paramEq.M, paramEq.constType)
+    # normaliza os símbolos da constelação
+    constSymb = pnorm(constSymb)
+    
     if paramEq.alg == 'cma':
         y, e, w = cmaUp(x, constSymb, nModes, paramEq)
     elif paramEq.alg == 'rde':
@@ -436,7 +447,7 @@ def cmaUp(x, constSymb, nModes, paramEq, preConv=False):
             break
     
     if preConv:
-        w = w/np.max(np.abs(w))
+        w = pnorm(w)
         y, e, w = rdeUp(x, constSymb, nModes, paramEq, y, e, w, preConv=True)
 
     return y, e, w
