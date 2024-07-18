@@ -447,7 +447,7 @@ def cmaUp(x, constSymb, nModes, paramEq, preConv=False):
             break
     
     if preConv:
-        w = pnorm(w)
+        w = w/np.max(np.abs(w))
         y, e, w = rdeUp(x, constSymb, nModes, paramEq, y, e, w, preConv=True)
 
     return y, e, w
