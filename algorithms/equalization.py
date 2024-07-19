@@ -220,15 +220,14 @@ def mimoAdaptEq(x, paramEq):
     x : np.array
         Sinal de entrada com duas polarizações.
 
-    constSymb : np.array
-        Símbolos da constelação normalizados.
-
-    paramEq : struct
+    paramEq : (struct) 
+        Parâmetros do equalizador
+        
         - paramEq.taps (int): Número de coeficientes dos filtros.
         
-        - paramEq.lr (float): Tamanho do passo para a convergência do algoritmo ['cma', 'rde'].
+        - paramEq.lr (float): Tamanho do passo para a convergência do algoritmo: ['cma', 'rde'].
 
-        - paramEq.alg (str): Algoritmo de equalização adaptativa a ser usado: ['cma', 'rde', 'cma-to-rde'].
+        - paramEq.alg (str): Algoritmo de equalização adaptativa a ser utilizado: ['cma', 'rde', 'cma-to-rde'].
 
         - paramEq.progBar (bool): Visualização da barra de progresso.
 
@@ -236,7 +235,7 @@ def mimoAdaptEq(x, paramEq):
           da inicialização adequada dos filtros w2H e w2V.
 
         - paramEq.N2 (int): Número de cálculos de coeficientes a serem realizados antes de mudar
-          de CMA para 
+          de CMA para RDE.
         
         - paramEq.M (int): Ordem do esquema de modulação.
         
