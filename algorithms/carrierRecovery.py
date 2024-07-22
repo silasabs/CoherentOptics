@@ -82,15 +82,22 @@ def movingAverage(x, N, alpha=0.03, window='constant'):
     -------
     np.array
         Matriz 2D contendo a média móvel ao longo de cada coluna.
+    
+    Raises
+    ------
+    ValueError
+        Caso a janela não seja especificada de forma correta.
     """
     
     nModes = x.shape[1]
 
     if window == 'constant':
         h = np.ones(N) / N
+    
     elif window == 'laplacian':
         w = np.arange(-N // 2, N // 2)
         h = np.exp(-np.abs(w)*alpha)
+    
     else:
         raise ValueError('Janela especificada incorretamente.')
 
