@@ -58,3 +58,56 @@ def fourthPower(sigRx, Fs, plotSpectrum=False):
         plot4thPower(sigRx, axisFreq)
         
     return sigRx, indFO
+
+def movingAverage(x, N, alpha=0.03, window='constant'):
+    """
+    Calcula a média móvel para um array 2D ao longo de cada coluna.
+
+    Parameters
+    ----------
+    x : np.array
+        Matriz 2D do tipo (M,N), onde M é a quantidade das amostras
+        e N o número de colunas.
+
+    N : int
+        Comprimento da janela.
+
+    alpha : float, optional
+        Parâmetro de escala (dispersão da distribuição laplaciana), by default 0.03
+
+    window : str, optional
+        Define a janela da média móvel [constant, laplacian], by default 'constant'
+
+    Returns
+    -------
+    np.array
+        Matriz 2D contendo a média móvel ao longo de cada coluna.
+    """
+    
+    nModes = x.shape[1]
+
+    if window == 'constant':
+        h = np.ones(N) / N
+    elif window == 'laplacian':
+        w = np.arange(-N // 2, N // 2)
+        h = np.exp(-np.abs(w)*alpha)
+    else:
+        raise ValueError('Janela especificada incorretamente.')
+
+    y = np.zeros(x.shape, dtype=x.dtype)
+
+    start = N//2
+    end   = -N//2+1 if N%2 else -N//2
+
+    for index in range(nModes):
+        
+        # preenche as bordas do sinal com zeros
+        x_padding = np.pad(x[:, index], (N//2, N//2), mode='constant')
+        
+        # calcula a média móvel 
+        average = np.convolve(x_padding, h, mode='same')
+        
+        # obtém a saída de mesmo comprimento da entrada
+        y[:, index] = average[start:end]
+        
+    return y
