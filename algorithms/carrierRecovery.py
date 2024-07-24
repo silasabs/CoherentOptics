@@ -1,4 +1,5 @@
 import numpy as np
+from optic.dsp.core import pnorm
 from utils import plot4thPower
 import matplotlib.pyplot as plt
 
@@ -58,6 +59,35 @@ def fourthPower(sigRx, Fs, plotSpectrum=False):
         plot4thPower(sigRx, axisFreq)
         
     return sigRx, indFO
+
+def viterbiCPR(sigRx, N=85, M=4):
+    """
+    Recupera a fase da portadora com o algoritmo Virterbi & Viterbi
+
+    Parameters
+    ----------
+    sigRx : np.array
+        Sinal de entrada para se obter a referência de fase.
+
+    N : int, optional
+        Comprimento do filtro, by default 85
+
+    M : int, optional
+        Ordem da potência, by default 4
+
+    Returns
+    -------
+    tuple:
+        sigRx (np.array): Constelação com referência de fase.
+        phiTime (np.array): Estimativa de fase em cada modo.
+    """
+
+    phiTime = np.unwrap((np.angle(movingAverage(sigRx**M, N, window='laplacian')) / M) - np.pi/M, axis=0)
+    phiTime = np.unwrap(4 * phiTime, axis=0) / 4
+
+    sigRx = pnorm(sigRx * np.exp(-1j * phiTime))
+    
+    return sigRx, phiTime
 
 def movingAverage(x, N, alpha=0.03, window='constant'):
     """
