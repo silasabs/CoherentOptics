@@ -135,7 +135,7 @@ def movingAverage(x, N, alpha=0.03, window='constant'):
         raise ValueError('Janela especificada incorretamente.')
 
     if len(h) > x.shape[0]:
-        raise ValueError('A janela deve ser menor que o comprimento do sinal de entrada.')
+        raise ValueError('A janela deve ser menor ou igual ao comprimento do sinal de entrada.')
     
     y = np.zeros(x.shape, dtype=x.dtype)
 
