@@ -111,11 +111,13 @@ def DDcpr(sigRx, constSymb, N=85):
         phiTime (np.array): Estimativa de fase em cada modo.
     """
 
-    phiTime = np.angle(movingAverage(sigRx * np.conj(constSymb), N, window='laplacian'))
+    phiTime = np.angle(movingAverage(sigRx * pnorm(np.conj(constSymb)), N, window='DDlaplacian'))
     # remove as descontinuidades de fase
     phiTime = np.unwrap(4 * phiTime) / 4
     
-    return pnorm(sigRx * np.exp(-1j * phiTime)), phiTime
+    sigRx = pnorm(sigRx * np.exp(-1j * phiTime))
+
+    return sigRx, phiTime
 
 def movingAverage(x, N, alpha=0.03, window='constant'):
     """
@@ -134,7 +136,7 @@ def movingAverage(x, N, alpha=0.03, window='constant'):
         Parâmetro de escala (dispersão da distribuição laplaciana), by default 0.03
 
     window : str, optional
-        Define a janela da média móvel [constant, laplacian], by default 'constant'
+        Define a janela da média móvel [constant, laplacian, DDlaplacian], by default 'constant'
 
     Returns
     -------
@@ -159,6 +161,10 @@ def movingAverage(x, N, alpha=0.03, window='constant'):
         w = np.arange(-N, N)
         h = np.exp(-np.abs(w)*alpha)
     
+    elif window == 'DDlaplacian':
+        w = np.arange(0, N)
+        h = np.exp(-np.abs(w)*alpha)
+
     else:
         raise ValueError('Janela especificada incorretamente.')
 
