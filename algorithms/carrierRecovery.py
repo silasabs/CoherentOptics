@@ -89,6 +89,34 @@ def viterbiCPR(sigRx, N=85, M=4):
     
     return sigRx, phiTime
 
+def DDcpr(sigRx, constSymb, N=85):
+    """
+    Recupera a fase da portadora com o algoritmo direcionado por decisão.
+
+    Parameters
+    ----------
+    sigRx : np.array
+        Sinal de entrada para se obter a referência de fase.
+        
+    constSymb : np.array
+        Decisão dos símbolos transmitidos
+
+    N : int, optional
+        Comprimento do filtro, by default 85
+
+    Returns
+    -------
+    tuple:
+        sigRx (np.array): Constelação com referência de fase.
+        phiTime (np.array): Estimativa de fase em cada modo.
+    """
+
+    phiTime = np.angle(movingAverage(sigRx * np.conj(constSymb), N, window='laplacian'))
+    # remove as descontinuidades de fase
+    phiTime = np.unwrap(4 * phiTime) / 4
+    
+    return pnorm(sigRx * np.exp(-1j * phiTime)), phiTime
+
 def movingAverage(x, N, alpha=0.03, window='constant'):
     """
     Calcula a média móvel para um array 2D ao longo de cada coluna.
