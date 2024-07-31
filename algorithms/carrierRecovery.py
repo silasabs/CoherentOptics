@@ -89,7 +89,7 @@ def viterbiCPR(sigRx, N=85, M=4):
     
     return sigRx, phiTime
 
-def DDcpr(sigRx, constSymb, N=85):
+def ddCPR(sigRx, symbTx, N=85):
     """
     Recupera a fase da portadora com o algoritmo direcionado por decisão.
 
@@ -98,8 +98,8 @@ def DDcpr(sigRx, constSymb, N=85):
     sigRx : np.array
         Sinal de entrada para se obter a referência de fase.
         
-    constSymb : np.array
-        Decisão dos símbolos transmitidos
+    symbTx : np.array
+        sequência de símbolos transmitido.
 
     N : int, optional
         Comprimento do filtro, by default 85
@@ -111,10 +111,10 @@ def DDcpr(sigRx, constSymb, N=85):
         phiTime (np.array): Estimativa de fase em cada modo.
     """
 
-    phiTime = np.angle(movingAverage(sigRx * pnorm(np.conj(constSymb)), N, window='DDlaplacian'))
-    # remove as descontinuidades de fase
+    phiTime = np.angle(movingAverage(sigRx * pnorm(np.conj(symbTx)), N, window='DDlaplacian'))
+    # remove as descontinuidades de fase.
     phiTime = np.unwrap(4 * phiTime) / 4
-    
+    # compensa o ruído de fase.
     sigRx = pnorm(sigRx * np.exp(-1j * phiTime))
 
     return sigRx, phiTime
