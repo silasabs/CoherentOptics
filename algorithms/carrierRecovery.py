@@ -82,41 +82,10 @@ def viterbiCPR(sigRx, N=85, M=4):
         phiTime (np.array): Estimativa de fase em cada modo.
     """
 
-    phiTime = np.unwrap((np.angle(movingAverage(sigRx**M, N, window='laplacian')) / M) - np.pi/M, axis=0)
-    phiTime = np.unwrap(4 * phiTime, axis=0) / 4
-
+    phiTime = np.unwrap(np.angle(movingAverage(sigRx**M, N, alpha, window='laplacian')) / M - np.pi/M, period=2*np.pi/M, axis=0)
+    # compensa o ruído de fase
     sigRx = pnorm(sigRx * np.exp(-1j * phiTime))
     
-    return sigRx, phiTime
-
-def ddCPR(sigRx, symbTx, N=85):
-    """
-    Recupera a fase da portadora com o algoritmo direcionado por decisão.
-
-    Parameters
-    ----------
-    sigRx : np.array
-        Sinal de entrada para se obter a referência de fase.
-        
-    symbTx : np.array
-        sequência de símbolos transmitido.
-
-    N : int, optional
-        Comprimento do filtro, by default 85
-
-    Returns
-    -------
-    tuple:
-        sigRx (np.array): Constelação com referência de fase.
-        phiTime (np.array): Estimativa de fase em cada modo.
-    """
-
-    phiTime = np.angle(movingAverage(sigRx * pnorm(np.conj(symbTx)), N, window='DDlaplacian'))
-    # remove as descontinuidades de fase.
-    phiTime = np.unwrap(4 * phiTime) / 4
-    # compensa o ruído de fase.
-    sigRx = pnorm(sigRx * np.exp(-1j * phiTime))
-
     return sigRx, phiTime
 
 def movingAverage(x, N, alpha=0.03, window='constant'):
