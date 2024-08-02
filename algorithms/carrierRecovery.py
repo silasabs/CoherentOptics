@@ -88,6 +88,66 @@ def viterbiCPR(sigRx, N=85, M=4):
     
     return sigRx, phiTime
 
+def MLfilterVV(sigRx, OSNRdB, delta_lw, Rs, N, M=4):
+    """
+    Calcula o filtro de máxima verossimilhança (ML) para o algoritmo
+    Viterbi&Viterbi que depende da relação sinal-ruído e da magnitude do
+    ruído de fase.
+
+    Args:
+        sigRx (np.array): sinal compensado pelo deslocamento de frequência. 
+        
+        OSNRdB (int): OSNR do canal em dB.
+        
+        delta_lw (int): Soma das larguras de linha do laser do oscilador local
+                        e transmissor.
+        
+        Rs (int): Taxa de símbolos. [símbolos/segundo]
+        
+        N (int): Número de símbolos passados e futuros na janela. 
+        
+        M (int, optional): ordem do esquema de modulação M-PSK. Defaults to 4.
+
+    Returns:
+        np.array: Filtro de máxima verossimilhança a ser usado em Viterbi & Viterbi.
+    
+    Referências:
+        [1] Digital Coherent Optical Systems, Architecture and Algorithms
+    """
+    
+    nModes = sigRx.shape[1]
+    Ts = 1/Rs
+    
+    Es = np.mean(np.abs(sigRx) ** 2)
+    # comprimento do filtro de máxima verossimilhança
+    L  = 2 * N + 1
+    
+    # Parâmetros para matriz de covariância:
+    SNRLin       = 10**(OSNRdB/10) * (2 * 12.5e9) / (nModes*Rs)
+    σ_deltaTheta = 2 * np.pi * delta_lw * Ts
+    σ_eta        = Es / (2*SNRLin)
+    
+    K = np.zeros((L, L))
+    B = np.zeros((N + 1, N + 1))
+    
+    # obtem a matriz K 
+    for indlin in range(N + 1):
+        for indcol in range(N + 1):
+            B[indlin][indcol] = np.min([indlin, indcol])
+    
+    K[:N + 1, :N + 1] = np.rot90(B, 2)
+    K[N:L, N:L] = B
+    
+    I = np.eye(L)
+    
+    # obtém a matriz de covariância
+    C = Es**M * M**2 * σ_deltaTheta * K + Es**(M - 1) * M**2 * σ_eta * I
+    
+    # obtem os coeficientes do filtro de máxima verossimilhança
+    wML = np.linalg.inv(C) @ np.ones(L)
+    
+    return wML/np.max(wML)
+
 def movingAverage(x, N, alpha=0.03, window='constant'):
     """
     Calcula a média móvel para um array 2D ao longo de cada coluna.
