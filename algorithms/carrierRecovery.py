@@ -62,7 +62,8 @@ def fourthPower(sigRx, Fs, plotSpectrum=False):
 
 def viterbiCPR(sigRx, N=85, M=4):
     """
-    Recupera a fase da portadora com o algoritmo Virterbi & Viterbi
+    Recupera a fase da portadora com o algoritmo Virterbi & Viterbi considerando
+    uma janela laplaciana
 
     Parameters
     ----------
@@ -88,11 +89,39 @@ def viterbiCPR(sigRx, N=85, M=4):
     
     return sigRx, phiTime
 
+def mlviterbiCPR(sigRx, H, M=4):
+    """
+    Recupera a fase da portadora com o algoritmo Virterbi & Viterbi considerando
+    um filtro ótimo.
+
+    Parameters
+    ----------
+    sigRx : np.array
+        Sinal de entrada para se obter a referência de fase.
+
+    N : int, optional
+        Comprimento do filtro, by default 85
+
+    M : int, optional
+        Ordem da potência, by default 4
+
+    Returns
+    -------
+    tuple:
+        sigRx (np.array): Constelação com referência de fase.
+        phiTime (np.array): Estimativa de fase em cada modo.
+    """
+    
+    phiTime = np.unwrap(np.angle(movingAverage(sigRx**M, H=H, window='viterbi')) / M - np.pi/M, period=2*np.pi/M, axis=0)
+    # compensa o ruído de fase
+    sigRx = pnorm(sigRx * np.exp(-1j * phiTime))
+    
+    return sigRx, phiTime
+
 def MLfilterVV(sigRx, OSNRdB, delta_lw, Rs, N, M=4):
     """
-    Calcula o filtro de máxima verossimilhança (ML) para o algoritmo
-    Viterbi&Viterbi que depende da relação sinal-ruído e da magnitude do
-    ruído de fase.
+    Calcula o filtro de máxima verossimilhança (ML) para o algoritmo Viterbi&Viterbi 
+    que depende da relação sinal-ruído e da magnitude do ruído de fase.
 
     Args:
         sigRx (np.array): sinal compensado pelo deslocamento de frequência. 
@@ -109,7 +138,7 @@ def MLfilterVV(sigRx, OSNRdB, delta_lw, Rs, N, M=4):
         M (int, optional): ordem do esquema de modulação M-PSK. Defaults to 4.
 
     Returns:
-        np.array: Filtro de máxima verossimilhança a ser usado em Viterbi & Viterbi.
+        np.array: Coeficientes do filtro de máxima verossimilhança a ser usado em Viterbi & Viterbi.
     
     Referências:
         [1] Digital Coherent Optical Systems, Architecture and Algorithms
