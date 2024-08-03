@@ -118,7 +118,7 @@ def mlviterbiCPR(sigRx, H, M=4):
     
     return sigRx, phiTime
 
-def MLfilterVV(sigRx, OSNRdB, delta_lw, Rs, N, M=4):
+def mlfilterVV(sigRx, OSNRdB, delta_lw, Rs, N, M=4):
     """
     Calcula os coeficientes do filtro de máxima verossimilhança (ML) para o algoritmo 
     Viterbi&Viterbi, que depende da relação sinal-ruído e da magnitude do ruído de fase.
@@ -126,7 +126,7 @@ def MLfilterVV(sigRx, OSNRdB, delta_lw, Rs, N, M=4):
     Args:
         sigRx (np.array): sinal compensado pelo deslocamento de frequência. 
         
-        OSNRdB (int): OSNR do canal em dB.
+        OSNRdB (float): OSNR do canal em dB.
         
         delta_lw (int): Soma das larguras de linha do laser do oscilador local
                         e transmissor.
