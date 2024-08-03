@@ -99,8 +99,8 @@ def mlviterbiCPR(sigRx, H, M=4):
     sigRx : np.array
         Sinal de entrada para se obter a referência de fase.
 
-    N : int, optional
-        Comprimento do filtro, by default 85
+    H : np.array
+        Coeficientes do filtro de máxima verosimilhança.
 
     M : int, optional
         Ordem da potência, by default 4
