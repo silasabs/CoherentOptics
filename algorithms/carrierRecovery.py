@@ -177,7 +177,7 @@ def mlfilterVV(sigRx, OSNRdB, delta_lw, Rs, N, M=4):
     
     return wML/np.max(wML)
 
-def movingAverage(x, N, alpha=0.03, window='constant'):
+def movingAverage(x, N=45, alpha=0.03, H=None, window='constant'):
     """
     Calcula a média móvel para um array 2D ao longo de cada coluna.
 
@@ -193,8 +193,11 @@ def movingAverage(x, N, alpha=0.03, window='constant'):
     alpha : float, optional
         Parâmetro de escala (dispersão da distribuição laplaciana), by default 0.03
 
+    H : np.array
+        Matriz de coeficientes do filtro de máxima verossimilhança.
+    
     window : str, optional
-        Define a janela da média móvel [constant, laplacian, DDlaplacian], by default 'constant'
+        Define a janela da média móvel [constant, laplacian, viterbi], by default 'constant'
 
     Returns
     -------
@@ -218,10 +221,9 @@ def movingAverage(x, N, alpha=0.03, window='constant'):
     elif window == 'laplacian':
         w = np.arange(-N, N)
         h = np.exp(-np.abs(w)*alpha)
-    
-    elif window == 'DDlaplacian':
-        w = np.arange(0, N)
-        h = np.exp(-np.abs(w)*alpha)
+
+    elif window == 'viterbi':
+        h = H
 
     else:
         raise ValueError('Janela especificada incorretamente.')
@@ -233,7 +235,7 @@ def movingAverage(x, N, alpha=0.03, window='constant'):
 
     for index in range(nModes):
         
-        # calcula a média móvel 
+        # calcula a média móvel ao longo de cada coluna 
         average = np.convolve(x[:, index], h, mode='same')
         
         # obtém a saída de mesmo comprimento da entrada
