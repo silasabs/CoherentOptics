@@ -120,8 +120,8 @@ def mlviterbiCPR(sigRx, H, M=4):
 
 def MLfilterVV(sigRx, OSNRdB, delta_lw, Rs, N, M=4):
     """
-    Calcula o filtro de máxima verossimilhança (ML) para o algoritmo Viterbi&Viterbi 
-    que depende da relação sinal-ruído e da magnitude do ruído de fase.
+    Calcula os coeficientes do filtro de máxima verossimilhança (ML) para o algoritmo 
+    Viterbi&Viterbi, que depende da relação sinal-ruído e da magnitude do ruído de fase.
 
     Args:
         sigRx (np.array): sinal compensado pelo deslocamento de frequência. 
