@@ -89,7 +89,7 @@ def viterbiCPR(sigRx, N=85, M=4):
     
     return sigRx, phiTime
 
-def mlviterbiCPR(sigRx, H, M=4):
+def mlviterbiCPR(sigRx, OSNRdB, lw, N, M=4):
     """
     Recupera a fase da portadora com o algoritmo Virterbi & Viterbi considerando
     um filtro ótimo.
@@ -99,8 +99,15 @@ def mlviterbiCPR(sigRx, H, M=4):
     sigRx : np.array
         Sinal de entrada para se obter a referência de fase.
 
-    H : np.array
-        Coeficientes do filtro de máxima verosimilhança.
+    OSNRdB : float
+        OSNR do canal em dB.
+
+    lw : int
+        Soma das larguras de linha do laser do oscilador local e transmissor.
+    
+    N : int
+        Número de símbolos passados e futuros na janela. O comprimento
+        do filtro é então L = 2*N+1.
 
     M : int, optional
         Ordem da potência, by default 4
@@ -109,24 +116,37 @@ def mlviterbiCPR(sigRx, H, M=4):
     -------
     tuple:
         sigRx (np.array): Constelação com referência de fase.
-        phiTime (np.array): Estimativa de fase em cada modo.
+        phiTime (np.array): Estimativa do ruído de fase em cada modo.
     """
     
-    phiTime = np.unwrap(np.angle(movingAverage(sigRx**M, H=H, window='viterbi')) / M - np.pi/M, period=2*np.pi/M, axis=0)
+    try:
+        nModes = sigRx.shape[1]
+    except IndexError:
+        sigRx = sigRx.reshape(len(sigRx), 1)
+    
+    Es = np.mean(np.abs(sigRx) ** 2)
+    
+    # obtem os coeficientes ótimos 
+    wML = mlFilterVV(Es, nModes, OSNRdB, lw, Rs, N)
+
+    phiTime = np.unwrap(np.angle(movingAverage(sigRx**M, H=wML, window='viterbi')) / M - np.pi/M, period=2*np.pi/M, axis=0)
     # compensa o ruído de fase
     sigRx = pnorm(sigRx * np.exp(-1j * phiTime))
     
     return sigRx, phiTime
 
-def mlFilterVV(sigRx, OSNRdB, delta_lw, Rs, N, M=4):
+def mlFilterVV(Es, nModes, OSNRdB, delta_lw, Rs, N, M=4):
     """
     Calcula os coeficientes do filtro de máxima verossimilhança (ML) para o algoritmo 
     Viterbi&Viterbi, que depende da relação sinal-ruído e da magnitude do ruído de fase.
 
     Parameters
     ----------
-    sigRx : np.array
-        Sinal compensado pelo deslocamento de frequência.
+    Es : float
+        Energia dos símbolos.
+    
+    nModes : int
+        Número de polarizações.
 
     OSNRdB : float
         OSNR do canal em dB.
@@ -156,21 +176,16 @@ def mlFilterVV(sigRx, OSNRdB, delta_lw, Rs, N, M=4):
         [2] E. Ip, J.M. Kahn, Feedforward carrier recovery for coherent optical communications. J.
             Lightwave Technol. 25(9), 2675–2692 (2007).
     """
-    
-    try:
-        nModes = sigRx.shape[1]
-    except IndexError:
-        sigRx = sigRx.reshape(len(sigRx), 1)
-
+          
     Ts = 1/Rs
     
-    Es = np.mean(np.abs(sigRx) ** 2)
+    # comprimento do filtro de máxima verossimilhança
     L  = 2 * N + 1
     
     # Parâmetros para matriz de covariância:
     SNRLin       = 10**(OSNRdB/10) * (2 * 12.5e9) / (nModes*Rs)
     σ_deltaTheta = 2 * np.pi * delta_lw * Ts
-    σ_eta        = Es / (2*SNRLin)
+    σ_eta        = Es / (2 * SNRLin)
     
     K = np.zeros((L, L))
     B = np.zeros((N + 1, N + 1))
