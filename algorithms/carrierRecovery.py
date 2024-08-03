@@ -89,7 +89,7 @@ def viterbiCPR(sigRx, N=85, M=4):
     
     return sigRx, phiTime
 
-def mlviterbiCPR(sigRx, OSNRdB, lw, N, M=4):
+def mlviterbiCPR(sigRx, Rs, OSNRdB, lw, N, M=4):
     """
     Recupera a fase da portadora com o algoritmo Virterbi & Viterbi considerando
     um filtro ótimo.
