@@ -99,6 +99,9 @@ def mlviterbiCPR(sigRx, Rs, OSNRdB, lw, N, M=4):
     sigRx : np.array
         Sinal de entrada para se obter a referência de fase.
 
+    Rs : int
+        Taxa de símbolos. [símbolos/segundo].
+
     OSNRdB : float
         OSNR do canal em dB.
 
@@ -155,7 +158,7 @@ def mlFilterVV(Es, nModes, OSNRdB, delta_lw, Rs, N, M=4):
         Soma das larguras de linha do laser do oscilador local e transmissor.
 
     Rs : int
-        Taxa de símbolos. [símbolos/segundo]
+        Taxa de símbolos. [símbolos/segundo].
 
     N : int
         Número de símbolos passados e futuros na janela. O comprimento
