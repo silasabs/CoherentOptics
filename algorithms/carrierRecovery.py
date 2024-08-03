@@ -133,7 +133,8 @@ def mlfilterVV(sigRx, OSNRdB, delta_lw, Rs, N, M=4):
         
         Rs (int): Taxa de símbolos. [símbolos/segundo]
         
-        N (int): Número de símbolos passados e futuros na janela. 
+        N (int): Número de símbolos passados e futuros na janela. O comprimento
+                 do filtro é então L = 2*N+1
         
         M (int, optional): ordem do esquema de modulação M-PSK. Defaults to 4.
 
@@ -144,11 +145,14 @@ def mlfilterVV(sigRx, OSNRdB, delta_lw, Rs, N, M=4):
         [1] Digital Coherent Optical Systems, Architecture and Algorithms
     """
     
-    nModes = sigRx.shape[1]
+    try:
+        nModes = sigRx.shape[1]
+    except IndexError:
+        sigRx = sigRx.reshape(len(sigRx), 1)
+
     Ts = 1/Rs
     
     Es = np.mean(np.abs(sigRx) ** 2)
-    # comprimento do filtro de máxima verossimilhança
     L  = 2 * N + 1
     
     # Parâmetros para matriz de covariância:
