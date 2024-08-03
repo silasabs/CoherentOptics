@@ -152,6 +152,9 @@ def mlFilterVV(sigRx, OSNRdB, delta_lw, Rs, N, M=4):
     Referências
     -----------
         [1] Digital Coherent Optical Systems, Architecture and Algorithms
+
+        [2] E. Ip, J.M. Kahn, Feedforward carrier recovery for coherent optical communications. J.
+            Lightwave Technol. 25(9), 2675–2692 (2007).
     """
     
     try:
