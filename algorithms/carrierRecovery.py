@@ -123,25 +123,34 @@ def mlfilterVV(sigRx, OSNRdB, delta_lw, Rs, N, M=4):
     Calcula os coeficientes do filtro de máxima verossimilhança (ML) para o algoritmo 
     Viterbi&Viterbi, que depende da relação sinal-ruído e da magnitude do ruído de fase.
 
-    Args:
-        sigRx (np.array): sinal compensado pelo deslocamento de frequência. 
-        
-        OSNRdB (float): OSNR do canal em dB.
-        
-        delta_lw (int): Soma das larguras de linha do laser do oscilador local
-                        e transmissor.
-        
-        Rs (int): Taxa de símbolos. [símbolos/segundo]
-        
-        N (int): Número de símbolos passados e futuros na janela. O comprimento
-                 do filtro é então L = 2*N+1
-        
-        M (int, optional): ordem do esquema de modulação M-PSK. Defaults to 4.
+    Parameters
+    ----------
+    sigRx : np.array
+        Sinal compensado pelo deslocamento de frequência.
 
-    Returns:
-        np.array: Coeficientes do filtro de máxima verossimilhança a ser usado em Viterbi & Viterbi.
+    OSNRdB : float
+        OSNR do canal em dB.
+
+    delta_lw : int
+        Soma das larguras de linha do laser do oscilador local e transmissor.
+
+    Rs : int
+        Taxa de símbolos. [símbolos/segundo]
+
+    N : int
+        Número de símbolos passados e futuros na janela. O comprimento
+        do filtro é então L = 2*N+1
+
+    M : int, optional
+        Ordem do esquema de modulação M-PSK. Defaults to 4.
+
+    Returns
+    -------
+    np.array
+        Coeficientes do filtro de máxima verossimilhança a ser usado em Viterbi & Viterbi.
     
-    Referências:
+    Referências
+    -----------
         [1] Digital Coherent Optical Systems, Architecture and Algorithms
     """
     
