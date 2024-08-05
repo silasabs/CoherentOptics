@@ -141,7 +141,7 @@ def mlviterbiCPR(sigRx, Rs, OSNRdB, lw, N, M=4):
 def mlFilterVV(Es, nModes, OSNRdB, delta_lw, Rs, N, M=4):
     """
     Calcula os coeficientes do filtro de máxima verossimilhança (ML) para o algoritmo 
-    Viterbi&Viterbi, que depende da relação sinal-ruído e da magnitude do ruído de fase.
+    Viterbi & Viterbi, que depende da relação sinal-ruído e da magnitude do ruído de fase.
 
     Parameters
     ----------
@@ -158,7 +158,7 @@ def mlFilterVV(Es, nModes, OSNRdB, delta_lw, Rs, N, M=4):
         Soma das larguras de linha do laser do oscilador local e transmissor.
 
     Rs : int
-        Taxa de símbolos. [símbolos/segundo].
+        Taxa de símbolos. [símbolos/segundo]
 
     N : int
         Número de símbolos passados e futuros na janela. O comprimento
@@ -182,31 +182,31 @@ def mlFilterVV(Es, nModes, OSNRdB, delta_lw, Rs, N, M=4):
           
     Ts = 1/Rs
     
-    # comprimento do filtro de máxima verossimilhança
+    # comprimento do filtro
     L  = 2 * N + 1
     
     # Parâmetros para matriz de covariância:
-    SNRLin       = 10**(OSNRdB/10) * (2 * 12.5e9) / (nModes*Rs)
+    SNR          = 10**(OSNRdB/10) * (2 * 12.5e9) / (nModes*Rs)
     σ_deltaTheta = 2 * np.pi * delta_lw * Ts
-    σ_eta        = Es / (2 * SNRLin)
+    σ_eta        = Es / (2 * SNR)
     
     K = np.zeros((L, L))
     B = np.zeros((N + 1, N + 1))
     
-    # obtem a matriz K 
+    # determina a matriz K 
     for indlin in range(N + 1):
         for indcol in range(N + 1):
             B[indlin][indcol] = np.min([indlin, indcol])
     
-    K[:N + 1, :N + 1] = np.rot90(B, 2)
-    K[N:L, N:L] = B
+    K[:N+1,:N+1] = np.rot90(B, 2)
+    K[N:L,N:L] = B
     
     I = np.eye(L)
     
     # obtém a matriz de covariância
     C = Es**M * M**2 * σ_deltaTheta * K + Es**(M - 1) * M**2 * σ_eta * I
     
-    # obtem os coeficientes do filtro de máxima verossimilhança
+    # determina os coeficientes do filtro 
     wML = np.linalg.inv(C) @ np.ones(L)
     
     return wML/np.max(wML)
