@@ -60,7 +60,7 @@ def fourthPower(sigRx, Fs, plotSpectrum=False):
         
     return sigRx, indFO
 
-def viterbiCPR(sigRx, N=85, M=4):
+def laplaceViterbiCPR(sigRx, N=85, M=4):
     """
     Recupera a fase da portadora com o algoritmo Virterbi & Viterbi considerando
     uma janela laplaciana
@@ -89,7 +89,7 @@ def viterbiCPR(sigRx, N=85, M=4):
     
     return sigRx, phiTime
 
-def mlviterbiCPR(sigRx, Rs, OSNRdB, lw, N, M=4):
+def mlViterbiCPR(sigRx, Rs, OSNRdB, lw, N, M=4):
     """
     Recupera a fase da portadora com o algoritmo Virterbi & Viterbi considerando
     um filtro ótimo.
@@ -256,7 +256,7 @@ def movingAverage(x, N=45, alpha=0.03, H=None, window='constant'):
         w = np.arange(-N, N)
         h = np.exp(-np.abs(w)*alpha)
 
-    elif window == 'viterbi':
+    elif window == 'viterbi' and H is not None:
         h = H
 
     else:
@@ -272,7 +272,7 @@ def movingAverage(x, N=45, alpha=0.03, H=None, window='constant'):
         # calcula a média móvel ao longo de cada coluna 
         average = np.convolve(x[:, index], h, mode='same')
         
-        # obtém a saída de mesmo comprimento da entrada
+        # obtém a média móvel ao longo de cada coluna
         y[:, index] = average
         
     return y
