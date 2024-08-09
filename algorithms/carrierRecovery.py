@@ -68,7 +68,7 @@ def laplaceViterbiCPR(sigRx, N=85, M=4):
     Parameters
     ----------
     sigRx : np.array
-        Sinal de entrada para se obter a referência de fase.
+        Sinal normalizado em potência, no qual a recuperação de fase será realizada.
 
     N : int, optional
         Comprimento do filtro, by default 85
