@@ -1,6 +1,6 @@
 import numpy as np
 from optic.dsp.core import pnorm
-from utils import plot4thPower
+from utils import plot4thPower, convmtx
 import matplotlib.pyplot as plt
 
 def fourthPower(sigRx, Fs, plotSpectrum=False):
@@ -97,7 +97,7 @@ def mlViterbiCPR(sigRx, Rs, OSNRdB, lw, N, M=4):
     Parameters
     ----------
     sigRx : np.array
-        Sinal de entrada para se obter a referência de fase.
+        Sinal normalizado em potência, no qual a recuperação de fase será realizada.
 
     Rs : int
         Taxa de símbolos. [símbolos/segundo].
@@ -137,6 +137,72 @@ def mlViterbiCPR(sigRx, Rs, OSNRdB, lw, N, M=4):
     sigRx = pnorm(sigRx * np.exp(-1j * phiTime))
     
     return sigRx, phiTime
+
+def viterbi(z, lw, Rs, OSNRdB, N, M=4):
+    """
+    Compensa o ruído de fase com o algoritmo Viterbi & Viterbi
+    
+    Parameters
+    ----------
+    z : np.array
+        Sinal normalizado em potência, no qual a recuperação de fase será realizada.
+        
+    lw : int
+        Soma das larguras de linha do laser do oscilador local e transmissor.
+
+    Rs : int
+        Taxa de símbolos. [símbolos/segundo].
+        
+    OSNRdB : float
+        OSNR do canal em dB.
+        
+    N : int
+        Número de símbolos passados e futuros na janela. O comprimento
+        do filtro é então L = 2*N+1.
+        
+    M : int, optional
+        Ordem da potência, by default 4
+
+    Returns
+    -------
+    tuple:
+        sigRx (np.array): Constelação com referência de fase.
+        phiTime (np.array): Estimativa do ruído de fase em cada modo.
+    
+    Referências
+    -----------
+    [1] Digital Coherent Optical Systems, Architecture and Algorithms
+    """
+    
+    # comprimento do filtro
+    L = 2 * N + 1
+
+    nModes = z.shape[1]
+    Es = np.mean(np.abs(z)**2)
+
+    # obtém os coeficientes do filtro de máxima verossimilhança
+    h = mlFilterVV(Es, nModes, OSNRdB, lw, Rs, N)
+    
+    # estimativa de fase 
+    phiTime = np.zeros(z.shape)
+    
+    for indPhase in range(nModes):
+        
+        sigRx = np.pad(z[:, indPhase], (L//2, L//2), mode='constant', constant_values=0+0j)
+
+        # calcula a matriz de convolução de comprimento L
+        sigRx = convmtx(sigRx, L)[:, :z.shape[0]]
+        
+        # obtém a estimativa de fase em cada modo 
+        phiTime[:, indPhase] = np.angle(np.dot(h.T, sigRx**M)) / M - np.pi/M
+    
+    # phase unwrap
+    phiPU = np.unwrap(phiTime, period=2*np.pi/M, axis=0)
+    
+    # compensa o ruído de fase
+    z = pnorm(z * np.exp(-1j * phiPU))
+    
+    return z, phiPU
 
 def mlFilterVV(Es, nModes, OSNRdB, delta_lw, Rs, N, M=4):
     """
