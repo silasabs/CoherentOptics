@@ -33,8 +33,8 @@ def overlap_save(x, h, NFFT):
     
     Referências
     -----------
-    [1] Processamento Digital de Sinais Paulo S. R. Diniz Eduardo A. B. da Silva Sergio L. Netto
-        Projeto e Análise de Sistemas. 2º Ed.
+        [1] Processamento Digital de Sinais Paulo S. R. Diniz Eduardo A. B. da Silva Sergio L. Netto
+            Projeto e Análise de Sistemas. 2º Ed.
     """
 
     K = len(h)
@@ -110,7 +110,7 @@ def lms(u, d, taps, mu):
     
     Referências
     -----------
-    [1] Adaptive Filtering: Algorithms and Practical Implementation
+        [1] Adaptive Filtering: Algorithms and Practical Implementation
     """
 
     # número de iterações para filtragem adaptativa
@@ -317,7 +317,7 @@ def rdeUp(x, constSymb, nModes, paramEq, y=None, e=None, w=None, preConv=False):
     
     Referências
     -----------
-    [1] Digital Coherent Optical Systems, Architecture and Algorithms
+        [1] Digital Coherent Optical Systems, Architecture and Algorithms
     """
     
     N = len(x) - paramEq.taps + 1
@@ -399,7 +399,7 @@ def cmaUp(x, constSymb, nModes, paramEq, preConv=False):
     
     Referências
     -----------
-    [1] Digital Coherent Optical Systems, Architecture and Algorithms
+        [1] Digital Coherent Optical Systems, Architecture and Algorithms
     """
 
     N = len(x) - paramEq.taps + 1
