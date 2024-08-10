@@ -27,7 +27,7 @@ def fourthPower(sigRx, Fs, plotSpectrum=False):
     
     Referências
     -----------
-    [1] Digital Coherent Optical Systems, Architecture and Algorithms
+        [1] Digital Coherent Optical Systems, Architecture and Algorithms
     """
     
     try:
