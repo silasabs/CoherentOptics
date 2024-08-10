@@ -171,7 +171,7 @@ def viterbi(z, lw, Rs, OSNRdB, N, M=4):
     
     Referências
     -----------
-    [1] Digital Coherent Optical Systems, Architecture and Algorithms
+        [1] Digital Coherent Optical Systems, Architecture and Algorithms
     """
     
     # comprimento do filtro
