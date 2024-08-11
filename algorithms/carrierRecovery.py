@@ -140,7 +140,7 @@ def mlViterbiCPR(sigRx, Rs, OSNRdB, lw, N, M=4):
 
 def viterbi(z, lw, Rs, OSNRdB, N, M=4):
     """
-    Compensa o ruído de fase com o algoritmo Viterbi & Viterbi
+    Compensa o ruído de fase com o algoritmo Viterbi & Viterbi.
     
     Parameters
     ----------
@@ -188,10 +188,11 @@ def viterbi(z, lw, Rs, OSNRdB, N, M=4):
     
     for indPhase in range(nModes):
         
-        sigRx = np.pad(z[:, indPhase], (L//2, L//2), mode='constant', constant_values=0+0j)
-
+        sigRx = np.pad(z[:, indPhase], (L//2, L//2), mode='constant')
+        
         # calcula a matriz de convolução de comprimento L
-        sigRx = convmtx(sigRx, L)[:, :z.shape[0]]
+        sigRx = convmtx(sigRx, L)
+        sigRx = np.flipud(sigRx[:, L-1:-L+1])
         
         # obtém a estimativa de fase em cada modo 
         phiTime[:, indPhase] = np.angle(np.dot(h.T, sigRx**M)) / M - np.pi/M
