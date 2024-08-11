@@ -192,6 +192,8 @@ def viterbi(z, lw, Rs, OSNRdB, N, M=4):
         
         # calcula a matriz de convolução de comprimento L
         sigRx = convmtx(sigRx, L)
+        
+        # up-down flip
         sigRx = np.flipud(sigRx[:, L-1:-L+1])
         
         # obtém a estimativa de fase em cada modo 
