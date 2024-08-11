@@ -174,10 +174,14 @@ def viterbi(z, lw, Rs, OSNRdB, N, M=4):
         [1] Digital Coherent Optical Systems, Architecture and Algorithms
     """
     
+    try:
+        nModes = z.shape[1]
+    except IndexError:
+        sigRx = z.reshape(len(z), 1)
+    
     # comprimento do filtro
     L = 2 * N + 1
 
-    nModes = z.shape[1]
     Es = np.mean(np.abs(z)**2)
 
     # obtém os coeficientes do filtro de máxima verossimilhança
