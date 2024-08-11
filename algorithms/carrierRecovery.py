@@ -177,7 +177,7 @@ def viterbi(z, lw, Rs, OSNRdB, N, M=4):
     try:
         nModes = z.shape[1]
     except IndexError:
-        sigRx = z.reshape(len(z), 1)
+        z = z.reshape(len(z), 1)
     
     # comprimento do filtro
     L = 2 * N + 1
