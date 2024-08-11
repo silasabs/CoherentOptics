@@ -60,7 +60,7 @@ def fourthPower(sigRx, Fs, plotSpectrum=False):
         
     return sigRx, indFO
 
-def laplaceViterbiCPR(sigRx, N=85, M=4):
+def laplaceViterbiCPR(sigRx, alpha=0.03, N=85, M=4):
     """
     Recupera a fase da portadora com o algoritmo Virterbi & Viterbi considerando
     uma janela laplaciana
@@ -69,9 +69,12 @@ def laplaceViterbiCPR(sigRx, N=85, M=4):
     ----------
     sigRx : np.array
         Sinal normalizado em potência, no qual a recuperação de fase será realizada.
+    
+    alpha : float
+        Parâmetro de dispersão da distribuição de Laplace, by default 0.03
 
     N : int, optional
-        Comprimento do filtro, by default 85
+        Comprimento da janela, by default 85
 
     M : int, optional
         Ordem da potência, by default 4
