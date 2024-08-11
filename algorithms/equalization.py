@@ -244,7 +244,7 @@ def mimoAdaptEq(x, paramEq):
     Returns
     -------
     tuple
-        - y (np.array): estimativa dos símbolos.
+        - y (np.array): sinal após a compensação da dispersão cromática residual.
         - e (np.array): erro associado a cada modo de polarização.
         - w (np.array): matriz de coeficientes.
 
@@ -311,7 +311,7 @@ def rdeUp(x, constSymb, nModes, paramEq, y=None, e=None, w=None, preConv=False):
     Returns
     -------
     tuple
-        - y (np.array): estimativa dos símbolos.
+        - y (np.array): sinal após a compensação da dispersão cromática residual.
         - e (np.array): erro associado a cada modo de polarização.
         - w (np.array): matriz de coeficientes.
     
@@ -393,7 +393,7 @@ def cmaUp(x, constSymb, nModes, paramEq, preConv=False):
     Returns
     -------
     tuple
-        - y (np.array): estimativa dos símbolos.
+        - y (np.array): sinal após a compensação da dispersão cromática residual.
         - e (np.array): erro associado a cada modo de polarização.
         - w (np.array): matriz de coeficientes.
     
