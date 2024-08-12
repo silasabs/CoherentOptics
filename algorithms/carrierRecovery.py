@@ -268,9 +268,8 @@ def mlFilterVV(Es, nModes, OSNRdB, delta_lw, Rs, N, M=4):
     K = np.zeros((L, L))
     B = np.zeros((N + 1, N + 1))
     
-    # Determina a matriz K de forma vetorizada evitando loop nested 
+    # Determina a matriz B de forma vetorizada evitando loop nested 
     # e overhead de loops explícitos
-    
     index = np.arange(N + 1)
     B = np.minimum.outer(index, index)
     
