@@ -260,9 +260,13 @@ def mlFilterVV(Es, nModes, OSNRdB, delta_lw, Rs, N, M=4):
     Bref = 12.5e9      # Banda de referência
     L    = 2 * N + 1   # Comprimento do filtro
     
-    # Parâmetros para matriz de covariância
+    # dB para valor linear
     SNR = 10**(OSNRdB / 10) * (2 * Bref) / (nModes*Rs)
+    
+    # define a variância do ruído multiplicativo
     σ_deltaTheta = 2 * np.pi * delta_lw * Ts
+    
+    # define a variância do ruído aditivo
     σ_eta = Es / (2 * SNR)
     
     K = np.zeros((L, L))
@@ -282,9 +286,9 @@ def mlFilterVV(Es, nModes, OSNRdB, delta_lw, Rs, N, M=4):
     C = Es**M * M**2 * σ_deltaTheta * K + Es**(M - 1) * M**2 * σ_eta * I
     
     # Determina os coeficientes do filtro 
-    wML = np.linalg.inv(C) @ np.ones(L)
+    h = np.linalg.inv(C) @ np.ones(L)
     
-    return wML/np.max(wML)
+    return h/np.max(h)
 
 def movingAverage(x, N=45, alpha=0.03, H=None, window='constant'):
     """
