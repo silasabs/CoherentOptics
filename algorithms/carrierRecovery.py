@@ -256,33 +256,32 @@ def mlFilterVV(Es, nModes, OSNRdB, delta_lw, Rs, N, M=4):
             Lightwave Technol. 25(9), 2675–2692 (2007).
     """
           
-    Ts = 1/Rs
+    Ts   = 1/Rs        # Período de símbolo
+    Bref = 12.5e9      # Banda de referência
+    L    = 2 * N + 1   # Comprimento do filtro
     
-    # comprimento do filtro
-    L  = 2 * N + 1
-    
-    # Parâmetros para matriz de covariância:
-    SNR          = 10**(OSNRdB/10) * (2 * 12.5e9) / (nModes*Rs)
+    # Parâmetros para matriz de covariância
+    SNR = 10**(OSNRdB/10) * (2 * Bref) / (nModes*Rs)
     σ_deltaTheta = 2 * np.pi * delta_lw * Ts
-    σ_eta        = Es / (2 * SNR)
+    σ_eta = Es / (2 * SNR)
     
     K = np.zeros((L, L))
     B = np.zeros((N + 1, N + 1))
     
-    # determina a matriz K 
-    for indlin in range(N + 1):
-        for indcol in range(N + 1):
-            B[indlin][indcol] = np.min([indlin, indcol])
+    # Determina a matriz K de forma vetorizada evitando loop nested 
+    # e overhead de loops explícitos
+    index = np.arange(N + 1)
+    B = np.minimum.outer(index, index)
     
     K[:N+1,:N+1] = np.rot90(B, 2)
     K[N:L,N:L] = B
     
     I = np.eye(L)
     
-    # obtém a matriz de covariância
+    # Obtém a matriz de covariância
     C = Es**M * M**2 * σ_deltaTheta * K + Es**(M - 1) * M**2 * σ_eta * I
     
-    # determina os coeficientes do filtro 
+    # Determina os coeficientes do filtro 
     wML = np.linalg.inv(C) @ np.ones(L)
     
     return wML/np.max(wML)
