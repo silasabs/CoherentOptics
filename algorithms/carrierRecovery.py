@@ -257,7 +257,7 @@ def mlFilterVV(Es, nModes, OSNRdB, delta_lw, Rs, N, M=4):
     """
           
     Ts   = 1/Rs        # Período de símbolo
-    Bref = 12.5e9      # Banda de referência
+    Bref = 12.5e9      # Banda de referência [Hz]
     L    = 2 * N + 1   # Comprimento do filtro
     
     # dB para valor linear
