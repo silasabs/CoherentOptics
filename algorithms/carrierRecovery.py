@@ -270,6 +270,7 @@ def mlFilterVV(Es, nModes, OSNRdB, delta_lw, Rs, N, M=4):
     
     # Determina a matriz K de forma vetorizada evitando loop nested 
     # e overhead de loops explícitos
+    
     index = np.arange(N + 1)
     B = np.minimum.outer(index, index)
     
