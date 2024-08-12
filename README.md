@@ -5,13 +5,13 @@ Coherent Optical Systems Architecture and Algorithms](https://www.amazon.com.br/
 
 As anotações foram realizadas com o intuito de facilitar a compreensão dos conceitos abordados e fornecer exemplos de forma prática. Você pode criar o ambiente e simultaneamente instalar todos os pacotes necessários para começar:
 
-    # obtenha o repositório de forma local
+    # obtenha o repositório 
     $ git clone https://github.com/silasabs/CoherentOptics.git
     
     # acesse o diretório do projeto
     $ cd CoherentOptics
     
-    # crie um ambiente ideal para começar a navegar pelo projeto
+    # instale as dependências necessárias
     $ conda install --file requirements.txt    
 
 ## Sumário do Material
