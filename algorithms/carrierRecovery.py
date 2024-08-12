@@ -261,7 +261,7 @@ def mlFilterVV(Es, nModes, OSNRdB, delta_lw, Rs, N, M=4):
     L    = 2 * N + 1   # Comprimento do filtro
     
     # Parâmetros para matriz de covariância
-    SNR = 10**(OSNRdB/10) * (2 * Bref) / (nModes*Rs)
+    SNR = 10**(OSNRdB / 10) * (2 * Bref) / (nModes*Rs)
     σ_deltaTheta = 2 * np.pi * delta_lw * Ts
     σ_eta = Es / (2 * SNR)
     
