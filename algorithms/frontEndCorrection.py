@@ -18,10 +18,10 @@ def gsop(rLn):
     
     Referências
     -----------
-    [1] Digital Coherent Optical Systems, Architecture and Algorithms. 
+        [1] Digital Coherent Optical Systems, Architecture and Algorithms. 
         
-    [2] I. Fatadin, S.J. Savory, D. Ives, Compensation of quadrature imbalance 
-    in an optical QPSK coherent receiver. IEEE Photon. Technol. Lett. 20(20), 1733–1735 (2008)
+        [2] I. Fatadin, S.J. Savory, D. Ives, Compensation of quadrature imbalance 
+        in an optical QPSK coherent receiver. IEEE Photon. Technol. Lett. 20(20), 1733–1735 (2008)
     """
 
     Rin = np.array([rLn.real, rLn.imag]).T
@@ -40,8 +40,6 @@ def gsop(rLn):
 def Deskew(rIn, SpS, Rs, N, ParamSkew):
     """
     Realiza o enquadramento no sinal 'rIn' usando um interpolador de Lagrange de ordem 'N'. 
-    O desalinhamento temporal é compensado levando em consideração o menor atraso temporal. 
-    Os atrasos temporais de cada componente (fase e quadratura) são especificados em 'ParamSkew'.
 
     Parameters
     ----------
@@ -68,7 +66,12 @@ def Deskew(rIn, SpS, Rs, N, ParamSkew):
     
     Referências
     -----------
-    [1] Digital Coherent Optical Systems, Architecture and Algorithms
+        [1] Digital Coherent Optical Systems, Architecture and Algorithms
+    
+    Notes
+    -----
+        O desalinhamento temporal é compensado levando em consideração o menor atraso temporal. 
+        Os atrasos temporais de cada componente (fase e quadratura) são especificados em 'ParamSkew'.
     """
 
     rIn = rIn.reshape(-1)
@@ -144,7 +147,7 @@ def InsertSkew(In, SpS, Rs, ParamSkew):
 
     Referências
     -----------
-    [1] Digital Coherent Optical Systems, Architecture and Algorithms
+        [1] Digital Coherent Optical Systems, Architecture and Algorithms
     """
 
     Rin = np.array([In.real, In.imag]).T
