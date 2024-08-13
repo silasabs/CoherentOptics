@@ -30,14 +30,14 @@ def gsop(rLn):
     rQOrt = Rin[:,1] / np.sqrt(np.mean(Rin[:,1]**2))
 
     # Realiza a ortogonalização    
-    rIInt = Rin[:,0] - np.mean(Rin[:,1] * Rin[:,0]) * Rin[:,1] / np.mean(Rin[:,1]**2)
-    rIOrt = rIInt / np.sqrt(np.mean(rIInt**2))
+    rIInt = Rin[:, 0] - np.mean(Rin[:, 1] * Rin[:, 0]) * Rin[:, 1] / np.mean(Rin[:, 1]**2)
+    rIOrt = rIInt / np.sqrt(np.mean(rIInt ** 2))
 
-    sigRx = rIOrt + 1j*rQOrt
+    sigRx = rIOrt + 1j * rQOrt
 
     return sigRx
 
-def Deskew(rIn, SpS, Rs, N, ParamSkew):
+def deskew(rIn, SpS, Rs, N, ParamSkew):
     """
     Realiza o enquadramento no sinal 'rIn' usando um interpolador de Lagrange de ordem 'N'. 
 
@@ -75,40 +75,50 @@ def Deskew(rIn, SpS, Rs, N, ParamSkew):
     """
 
     rIn = rIn.reshape(-1)
-    In  = np.array([rIn.real, rIn.imag]).T
+    sigRx = np.array((rIn.real, rIn.imag)).T
 
     # Desvio a ser compensado tendo como referência o TADC
-    TADC = 1/(SpS*Rs)
-    Skew = np.array([ParamSkew.TauIV/TADC, ParamSkew.TauQV/TADC])
-
-    Skew = Skew - np.min(Skew) 
-    # Parte inteira e fracionária da inclinação.
-    nTADC = np.floor(Skew);  muTADC = -(Skew-nTADC)
-
-    # Obtendo o filtro FIR e realizando a interpolação.
-    NTaps = N+1
-    interp = []
-
-    for i in range(In.shape[1]):
-        L = np.zeros((NTaps, 1)); Aux = 0
-
-        # Obtenção do interpolador Lagrangeano
-        for n in np.arange(0, N+1) - np.floor(np.mean(np.arange(0, N+1))) + nTADC[i]:
-            m = np.arange(0, N+1) - np.floor(np.mean(np.arange(0, N+1))) + nTADC[i]
-            m = np.delete(m, np.where(m == n))
-            L[Aux,:] = np.prod((muTADC[i]-m)/(n-m))
-            Aux += 1
-        
-        # Interpolando o sinal recebido:
-        matrix = np.concatenate((np.zeros(1, np.floor(NTaps/2)), In[:,i].T, np.zeros(1, np.floor(NTaps/2))))
-        sAux = np.flipud(convmtx(matrix, NTaps))
-        sAux = sAux[:,NTaps-1:-1]
-
-        rOut = (L.T @ sAux).T
-        interp.append(rOut)
+    TADC = 1 / (SpS * Rs)
     
-    sigRx = np.array(interp)
-    sigRx = sigRx[0,:] + 1j*sigRx[1,:]
+    Skew  = np.array([ParamSkew.TauIV / TADC, ParamSkew.TauQV / TADC])
+    Skew -= np.min(Skew)
+
+    # Parte inteira e fracionária da inclinação.
+    nTADC  = np.floor(Skew)
+    muTADC = -(Skew - nTADC)
+
+    taps = N + 1    # coeficientes do filtro FIR
+    buffer = []     # buffer para obtensão do interpolador de lagrange 
+
+    index = np.arange(0, N + 1) - np.floor((N + 1) / 2)
+
+    for i in range(sigRx.shape[1]):
+        
+        # coeficientes de lagrange
+        L = np.zeros(taps)
+        
+        for indL, n in enumerate(index + nTADC[i]):
+            
+            # 'm' contém todos os pontos de interpolação, exceto 'n', para formar a base do polinômio.
+            m = np.delete(index + nTADC[i], np.where(index + nTADC[i] == n))
+            
+            # calcula os coeficientes de lagrange
+            L[indL] = np.prod((muTADC[i] - m) / (n - m))
+
+        # zero padding
+        matrix = np.pad(sigRx[:, i], (taps//2, taps//2), mode='constant')
+
+        # obtém a matriz de convolução
+        convMatrix = convmtx(matrix, taps)
+        convMatrix = convMatrix[:, taps-1: -1]
+
+        interp = L @ convMatrix
+        
+        # obtém a interpolação de lagrange
+        buffer.append(interp)
+
+    sigRx = np.array(buffer)
+    sigRx = sigRx[0, :] + 1j * sigRx[1, :]
 
     return sigRx
 
