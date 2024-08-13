@@ -201,7 +201,7 @@ def viterbi(z, lw, Rs, OSNRdB, N, M=4):
         sigRx = convmtx(sigRx, L)
         
         # up-down flip
-        sigRx = np.flipud(sigRx[:, L-1:-L+1])
+        sigRx = np.flipud(sigRx[:, L-1: -L+1])
         
         # obtém a estimativa de fase em cada modo 
         phiTime[:, indPhase] = np.angle(np.dot(h.T, sigRx**M)) / M - np.pi/M
