@@ -195,6 +195,7 @@ def viterbi(z, lw, Rs, OSNRdB, N, M=4):
     
     for indPhase in range(nModes):
         
+        # zero padding
         sigRx = np.pad(z[:, indPhase], (L//2, L//2), mode='constant')
         
         # calcula a matriz de convolução de comprimento L
