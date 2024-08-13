@@ -141,7 +141,7 @@ def mlViterbiCPR(sigRx, Rs, OSNRdB, lw, N, M=4):
     
     return sigRx, phiTime
 
-def viterbi(z, lw, Rs, OSNRdB, N, M=4):
+def viterbiCPR(z, lw, Rs, OSNRdB, N, M=4):
     """
     Compensa o ruído de fase com o algoritmo Viterbi & Viterbi.
     
