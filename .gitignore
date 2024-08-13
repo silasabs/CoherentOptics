@@ -1,0 +1,9 @@
+*.pdf
+*.drawio
+*.rst
+
+# jupyter files checkpoints
+.ipynb_checkpoints
+
+# ignore bytecodes
+algorithms/__pycache__
