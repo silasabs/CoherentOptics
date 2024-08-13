@@ -255,11 +255,11 @@ def mlFilterVV(Es, nModes, OSNRdB, delta_lw, Rs, N, M=4):
         [2] E. Ip, J.M. Kahn, Feedforward carrier recovery for coherent optical communications. J.
             Lightwave Technol. 25(9), 2675–2692 (2007).
     """
-          
-    Ts   = 1/Rs        # Período de símbolo
-    Bref = 12.5e9      # Banda de referência [Hz]
-    L    = 2 * N + 1   # Comprimento do filtro
     
+    Ts = 1/Rs          # Período de símbolo
+    L  = 2 * N + 1     # Comprimento do filtro
+    Bref = 12.5e9      # Banda de referência [Hz]
+
     # dB para valor linear
     SNR = 10**(OSNRdB / 10) * (2 * Bref) / (nModes*Rs)
     
