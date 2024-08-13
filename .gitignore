@@ -7,3 +7,5 @@
 
 # ignore bytecodes
 algorithms/__pycache__
+# ignore performance curves
+data/
