@@ -57,6 +57,7 @@ def deskew(rIn, SpS, Rs, N, ParamSkew):
 
     ParamSkew : struct
         - ParamSkew.TauIV: Atraso temporal para componente em fase.
+        
         - ParamSkew.TauQV: Atraso temporal para componente em quadratura.
 
     Returns
@@ -67,6 +68,10 @@ def deskew(rIn, SpS, Rs, N, ParamSkew):
     Referências
     -----------
         [1] Digital Coherent Optical Systems, Architecture and Algorithms
+        
+        [2] T. Tanimura, S. Oda, T. Tanaka, T. Hoshida, Z. Tao, J.C. Rasmussen, A simple digital
+            skew compensator for coherent receiver, in Proceedings of European Conference on Optical
+            Communication (ECOC) (2009)
     
     Notes
     -----
@@ -141,6 +146,7 @@ def insertSkew(In, SpS, Rs, ParamSkew):
         Especifica o atraso temporal (em segundos) para cada componente do sinal de entrada.
         
         - ParamSkew.TauIV: Atraso temporal para componente em fase.
+        
         - ParamSkew.TauQV: Atraso temporal para componente em quadratura.
 
     Returns
