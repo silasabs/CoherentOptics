@@ -27,10 +27,10 @@ def gsop(rLn):
     Rin = np.array([rLn.real, rLn.imag]).T
     
     # Tomando como referência a componente em quadratura
-    rQOrt = Rin[:,1] / np.sqrt(np.mean(Rin[:,1]**2))
+    rQOrt = Rin[:, 1] / np.sqrt(np.mean(Rin[:, 1] ** 2))
 
     # Realiza a ortogonalização    
-    rIInt = Rin[:, 0] - np.mean(Rin[:, 1] * Rin[:, 0]) * Rin[:, 1] / np.mean(Rin[:, 1]**2)
+    rIInt = Rin[:, 0] - np.mean(Rin[:, 1] * Rin[:, 0]) * Rin[:, 1] / np.mean(Rin[:, 1] ** 2)
     rIOrt = rIInt / np.sqrt(np.mean(rIInt ** 2))
 
     sigRx = rIOrt + 1j * rQOrt
@@ -122,7 +122,7 @@ def deskew(rIn, SpS, Rs, N, ParamSkew):
 
     return sigRx
 
-def InsertSkew(In, SpS, Rs, ParamSkew):    
+def insertSkew(In, SpS, Rs, ParamSkew):    
     """
     Insera um desalinhamento temporal (inclinação) entre os componentes em fase e quadratura. 
 
