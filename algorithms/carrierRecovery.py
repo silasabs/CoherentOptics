@@ -60,10 +60,10 @@ def fourthPower(sigRx, Fs, plotSpectrum=False):
         
     return sigRx, indFO
 
-def laplaceViterbiCPR(sigRx, alpha=0.03, N=85, M=4):
+def laplaceViterbiCPR(sigRx, alpha=0.03, weight='constant', N=85, M=4):
     """
     Recupera a fase da portadora com o algoritmo Virterbi & Viterbi considerando
-    uma janela laplaciana
+    uma janela laplaciana.
 
     Parameters
     ----------
@@ -72,9 +72,12 @@ def laplaceViterbiCPR(sigRx, alpha=0.03, N=85, M=4):
     
     alpha : float
         Parâmetro de dispersão da distribuição de Laplace, by default 0.03
+    
+    weight : str
+        Defina os coeficientes da janela do filtro.
 
     N : int, optional
-        Comprimento da janela, by default 85
+        Comprimento do filtro, by default 85
 
     M : int, optional
         Ordem da potência, by default 4
@@ -86,7 +89,9 @@ def laplaceViterbiCPR(sigRx, alpha=0.03, N=85, M=4):
         phiTime (np.array): Estimativa de fase em cada modo.
     """
 
-    phiTime = np.unwrap(np.angle(movingAverage(sigRx**M, N, alpha, window='laplacian')) / M - np.pi/M, period=2*np.pi/M, axis=0)
+    phiTime = np.unwrap(np.angle(movingAverage(sigRx**M, N, alpha, window = weight)) / M - np.pi/M, \
+                        period=2*np.pi/M, axis=0)
+    
     # compensa o ruído de fase
     sigRx = pnorm(sigRx * np.exp(-1j * phiTime))
     
