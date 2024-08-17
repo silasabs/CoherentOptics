@@ -23,6 +23,41 @@ def convmtx(h, N):
     H = sp.linalg.toeplitz(np.hstack((h, np.zeros(N-1))), np.zeros(N))
     return H.T
 
+def freqHCD(Fc, Fs, D, NFFT, L):
+    """
+    Resposta em frequência da dispersão cromática.
+
+    Parameters
+    ----------
+    Fc : float
+        Frequência central.
+
+    Fs : float
+        Frequência de amostragem.
+
+    D : int
+        Dispersão cromática [ps/nm/km]
+
+    NFFT : int
+        Tamanho da FFT
+
+    L : int
+        Comprimento do enlace [m].
+
+    Returns
+    -------
+    np.array
+        Resposta em frequência para dispersão cromática.
+    """
+   
+    c = 299792458   # velocidade da luz no vacuum
+    λ = c/Fc        # comprimento de onda
+
+    beta2 = -(D * λ**2) / (2 * np.pi * c)
+    omega = 2 * np.pi * Fs * np.fft.fftfreq(NFFT)
+
+    return np.exp(-1j * beta2/2 * omega**2 * L)
+
 def plot4thPower(sigRx, axisFreq):
     """
     Plote o espectro da quarta potência do sinal sigRx em dB.
