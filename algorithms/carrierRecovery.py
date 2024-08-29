@@ -175,7 +175,7 @@ def viterbiCPR(z, lw, Rs, OSNRdB, N, M=4):
     -------
     tuple:
         sigRx (np.array): Constelação com referência de fase.
-        phiTime (np.array): Estimativa do ruído de fase em cada modo.
+        phiPU (np.array): Estimativa do ruído de fase em cada modo.
     
     Referências
     -----------
