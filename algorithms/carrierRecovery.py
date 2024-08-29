@@ -220,6 +220,77 @@ def viterbiCPR(z, lw, Rs, OSNRdB, N, M=4):
     
     return z, phiPU
 
+def bps(z, constSymb, N, B):
+    """
+    Compensa o ruído de fase com o algoritmo de busca de fase cega.
+
+    Parameters
+    ----------
+    z : np.array
+        Sinal normalizado em potência, no qual a recuperação de fase será realizada.
+
+    constSymb : np.array
+        Símbolos da constelação.
+
+    N : int
+        Número de símbolos 'passados' e 'futuros' usados ​​no algoritmo BPS para estimativa 
+        de ruído de fase. O número total de símbolos é então L = 2*N+1
+
+    B : int
+        Número de rotações de teste.
+    
+    Returns
+    -------
+    tuple:
+        z (np.array): Constelação com referência de fase.
+        phiPU (np.array): Estimativa do ruído de fase em cada modo.
+    
+    Referências
+    -----------
+        [1] Digital Coherent Optical Systems, Architecture and Algorithms
+    """
+    
+    nModes = z.shape[1]
+
+    L = 2 * N + 1 # BPS block length
+    phiTest = (np.pi / 2) * np.arange(-B/2, B/2) / B # test phases
+
+    phiTime = np.zeros(z.shape)
+    
+    # define buffers auxiliares.
+    bufDist    = np.zeros((B, len(constSymb))) # obtém as distâncias quadráticas
+    bufMinDist = np.zeros((B, L))              # obtém as distâncias mínimas de cada bloco
+
+    # performs polarization preprocessing
+    for indMode in range(nModes):
+
+        # zero padding
+        zBlocks = np.pad(z[:, indMode], (N, N), constant_values=0+0j, mode='constant')
+
+        for indBlk in range(zBlocks.shape[0]):
+            for indPhase, phi in enumerate(phiTest):
+                
+                # calcula a distância euclidiana do símbolo aos símbolos da constelação
+                bufDist[indPhase, :] = np.abs((zBlocks[indBlk] * np.exp(-1j * phi) - constSymb) ** 2)
+
+                # obtenha a distância mínima de cada bloco até uma janela [0, L-1]
+                bufMinDist[indPhase, indBlk % L] = np.min(bufDist[indPhase, :])
+
+                # realiza a soma das distâncias mínimas sobre a mesma fase de teste, 
+                # obtendo a fase que melhor minimiza a soma total das distâncias mínimas.
+                phaseMin = np.argmin(np.sum(bufMinDist, axis=1))
+
+                # compensa o zero pad obtendo apenas os valores válidos
+                phiTime[indBlk - 2*N, indMode] = phiTest[phaseMin]
+    
+    # phase unwrap
+    phiPU = np.unwrap(phiTime, period=2*np.pi/4, axis=0)
+    
+    # compensa o ruído de fase.
+    z = pnorm(z * np.exp(-1j * phiPU))
+
+    return z, phiPU
+
 def mlFilterVV(Es, nModes, OSNRdB, delta_lw, Rs, N, M=4):
     """
     Calcula os coeficientes do filtro de máxima verossimilhança (ML) para o algoritmo 
