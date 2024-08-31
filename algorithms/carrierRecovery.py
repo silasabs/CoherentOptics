@@ -97,7 +97,7 @@ def laplaceViterbiCPR(sigRx, alpha=0.03, weight='constant', N=85, M=4):
     
     return sigRx, phiTime
 
-def mlViterbiCPR(sigRx, Rs, OSNRdB, lw, N, M=4):
+def avgViterbiCPR(sigRx, Rs, OSNRdB, lw, N, M=4):
     """
     Recupera a fase da portadora com o algoritmo Virterbi & Viterbi considerando
     um filtro ótimo.
@@ -287,6 +287,69 @@ def bps(z, constSymb, N, B):
     phiPU = np.unwrap(phiTime, period=2*np.pi/4, axis=0)
     
     # compensa o ruído de fase.
+    z = pnorm(z * np.exp(-1j * phiPU))
+
+    return z, phiPU
+
+def bpsVec(z, constSymb, N, B):
+    """
+    Compensa o ruído de fase com o algoritmo de busca de fase cega.
+
+    Parameters
+    ----------
+    z : np.array
+        Sinal normalizado em potência, no qual a recuperação de fase será realizada.
+
+    constSymb : np.array
+        Símbolos da constelação.
+
+    N : int
+        Número de símbolos 'passados' e 'futuros' usados ​​no algoritmo BPS para estimativa 
+        de ruído de fase. O número total de símbolos é então L = 2*N+1
+
+    B : int
+        Número de rotações de teste.
+    
+    Returns
+    -------
+    tuple:
+        z (np.array): Constelação com referência de fase.
+        phiPU (np.array): Estimativa do ruído de fase em cada modo.
+    
+    Referências
+    -----------
+        [1] Digital Coherent Optical Systems, Architecture and Algorithms
+
+        [2] LIU, Q.; JI, W.; LIU, P.; LI, Q.; BAI, C.; XU, H.; ZHU, Y. Blind phase search algorithm based
+            on threshold simplification. 2022.
+    """
+
+    L = 2 * N + 1
+    nModes = z.shape[1]
+    
+    phiTest = (np.pi / 2) * np.arange(-B/2, B/2) / B # fases de teste
+    
+    # zero padding 
+    lpad = np.zeros((N, nModes))
+    zBlocks = np.concatenate((lpad, z, lpad))
+
+    # aplica os ângulos da fase de teste aos símbolos
+    zRot = zBlocks[:, :, None] * np.exp(-1j * phiTest)
+
+    # calcule a distância quadrática entre os símbolos da constelação
+    distQuad = np.abs(zRot[:, :, :, None] - constSymb) ** 2
+    
+    # obtenha a métrica de distância mínima entre os símbolos
+    minDist  = np.min(distQuad, axis = -1)
+    
+    # obtem as fases que melhor minimizam a soma total das distâncias mínimas.
+    sumMinDist = np.array([np.sum(minDist[i:i+L, :, :], axis=0) 
+                           for i in range(z.shape[0])])
+    
+    indRot = np.argmin(sumMinDist, axis = -1)
+    phiPU  = np.unwrap(phiTest[indRot], period=2*np.pi/4, axis=0)
+
+    # compensa o ruído de fase
     z = pnorm(z * np.exp(-1j * phiPU))
 
     return z, phiPU
