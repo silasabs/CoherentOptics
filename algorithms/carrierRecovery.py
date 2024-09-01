@@ -342,10 +342,10 @@ def bpsVec(z, constSymb, N, B):
     # obtenha a métrica de distância mínima entre os símbolos
     minDist  = np.min(distQuad, axis = -1)
     
-    # obtem as fases que melhor minimizam a soma total das distâncias mínimas.
-    sumMinDist = np.array([np.sum(minDist[i:i+L, :, :], axis=0) 
-                           for i in range(z.shape[0])])
-    
+    # obtem as fases que melhor minimizam a soma total das distâncias mínimas
+    cumSum     = np.cumsum(minDist, axis=0)
+    sumMinDist = cumSum[L-1:] - np.vstack([np.zeros((1, nModes, B)), cumSum[:-L]])
+
     indRot = np.argmin(sumMinDist, axis = -1)
     phiPU  = np.unwrap(phiTest[indRot], period=2*np.pi/4, axis=0)
 
