@@ -1,6 +1,7 @@
 *.pdf
 *.drawio
 *.rst
+*.save
 
 # jupyter files checkpoints
 .ipynb_checkpoints
