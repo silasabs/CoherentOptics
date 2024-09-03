@@ -340,10 +340,10 @@ def bpsVec(z, constSymb, N, B):
     distQuad = np.abs(zRot[:, :, :, None] - constSymb) ** 2
     
     # obtenha a métrica de distância mínima entre os símbolos
-    minDist  = np.min(distQuad, axis = -1)
+    minDist = np.min(distQuad, axis = -1)
     
     # obtem as fases que melhor minimizam a soma total das distâncias mínimas
-    cumSum     = np.cumsum(minDist, axis=0)
+    cumSum = np.cumsum(minDist, axis=0)
     sumMinDist = cumSum[L-1:] - np.vstack([np.zeros((1, nModes, B)), cumSum[:-L]])
 
     indRot = np.argmin(sumMinDist, axis = -1)
