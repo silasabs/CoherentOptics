@@ -323,14 +323,13 @@ def bpsVec(z, constSymb, N, B):
         [2] LIU, Q.; JI, W.; LIU, P.; LI, Q.; BAI, C.; XU, H.; ZHU, Y. Blind phase search algorithm based
             on threshold simplification. 2022.
     """
-
-    L = 2 * N + 1
+    
     nModes = z.shape[1]
     
     phiTest = (np.pi / 2) * np.arange(-B/2, B/2) / B # fases de teste
     
     # zero padding 
-    lpad = np.zeros((N, nModes))
+    lpad = np.zeros((N // 2, nModes))
     zBlocks = np.concatenate((lpad, z, lpad))
 
     # aplica os ângulos da fase de teste aos símbolos
@@ -340,13 +339,13 @@ def bpsVec(z, constSymb, N, B):
     distQuad = np.abs(zRot[:, :, :, None] - constSymb) ** 2
     
     # obtenha a métrica de distância mínima entre os símbolos
-    minDist = np.min(distQuad, axis = -1)
+    minDist = np.min(distQuad, axis=-1)
     
     # obtem as fases que melhor minimizam a soma total das distâncias mínimas
     cumSum = np.cumsum(minDist, axis=0)
-    sumMinDist = cumSum[L-1:] - np.vstack([np.zeros((1, nModes, B)), cumSum[:-L]])
+    sumMinDist = cumSum[N-1:] - np.vstack([np.zeros((1, nModes, B)), cumSum[:-N]])
 
-    indRot = np.argmin(sumMinDist, axis = -1)
+    indRot = np.argmin(sumMinDist, axis=-1)
     phiPU  = np.unwrap(phiTest[indRot], period=2*np.pi/4, axis=0)
 
     # compensa o ruído de fase
