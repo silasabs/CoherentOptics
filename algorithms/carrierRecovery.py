@@ -11,7 +11,7 @@ def fourthPower(sigRx, Fs, plotSpectrum=False):
     Parameters
     ----------
     sigRx : np.array
-        Sinal a ser compensado.
+        Sinal a ser compensado o desvio de frequência.
 
     Fs : int
         taxa de amostragem.
