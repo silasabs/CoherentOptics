@@ -18,11 +18,11 @@ As anotações foram realizadas com o intuito de facilitar a compreensão dos co
 
 Navegue entre os principais tópicos de comunicações ópticas coerentes que são abordados através de anotações de aulas, simulações e exemplos práticos, disponibilizados em cadernos jupyter.
 
-**Chapter 2:** [The Optical Transmitter](https://github.com/silasabs/CoherentOptics/blob/main/examples/Optical%20Transmitters.ipynb)\
-**Chapter 3:** [The Optical Channel](https://github.com/silasabs/CoherentOptics/blob/main/examples/Optical%20Channel.ipynb) \
-**Chapter 4:** [The Receiver Front-End, Orthogonalization, and Deskew](https://github.com/silasabs/CoherentOptics/blob/main/examples/Coherent%20Receiver%20Front-End.ipynb) \
-**Chapter 5:** [Equalization](https://github.com/silasabs/CoherentOptics/blob/main/examples/Equalization.ipynb) \
-**Chapter 6:** [Carrier Recovery](https://github.com/silasabs/CoherentOptics/blob/main/examples/Carrier%20Recovery.ipynb) \
+**Chapter 2:** [The Optical Transmitter](https://github.com/silasabs/CoherentOptics/blob/main/examples/2.%20Optical%20Transmitters.ipynb)\
+**Chapter 3:** [The Optical Channel](https://github.com/silasabs/CoherentOptics/blob/main/examples/3.%20Optical%20Channel.ipynb) \
+**Chapter 4:** [The Receiver Front-End, Orthogonalization, and Deskew](https://github.com/silasabs/CoherentOptics/blob/main/examples/4.%20Coherent%20Receiver%20Front-End.ipynb) \
+**Chapter 5:** [Equalization](https://github.com/silasabs/CoherentOptics/blob/main/examples/5.%20Equalization.ipynb) \
+**Chapter 6:** [Carrier Recovery](https://github.com/silasabs/CoherentOptics/blob/main/examples/6.%20Carrier%20Recovery.ipynb) \
 **Chapter 7:** Clock Recovery \
 **Chapter 8:** Performance Evaluation
 
