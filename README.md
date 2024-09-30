@@ -23,7 +23,7 @@ Navegue entre os principais tópicos de comunicações ópticas coerentes que s�
 **Chapter 4:** [The Receiver Front-End, Orthogonalization, and Deskew](https://github.com/silasabs/CoherentOptics/blob/main/examples/4.%20Coherent%20Receiver%20Front-End.ipynb) \
 **Chapter 5:** [Equalization](https://github.com/silasabs/CoherentOptics/blob/main/examples/5.%20Equalization.ipynb) \
 **Chapter 6:** [Carrier Recovery](https://github.com/silasabs/CoherentOptics/blob/main/examples/6.%20Carrier%20Recovery.ipynb) \
-**Chapter 7:** Clock Recovery \
+**Chapter 7:** [Clock Recovery](https://github.com/silasabs/CoherentOptics/blob/main/examples/7.%20Clock%20Recovery.ipynb) \
 **Chapter 8:** Performance Evaluation
 
 Acesse as implementações de diferentes algoritmos descritos no livro de referência em [/algorithms](https://github.com/silasabs/CoherentOptics/tree/main/algorithms)
