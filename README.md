@@ -16,7 +16,7 @@ As anotações foram realizadas com o intuito de facilitar a compreensão dos co
 
 ## Sumário do Material
 
-Navegue entre os principais tópicos de comunicações ópticas coerentes que são abordados através de anotações de aulas, simulações e exemplos práticos, disponibilizados em cadernos jupyter.
+Navegue entre os principais blocos do DSP que são abordados através de anotações de aulas, simulações e exemplos de implementação, disponibilizados em cadernos jupyter.
 
 **Chapter 2:** [The Optical Transmitter](https://github.com/silasabs/CoherentOptics/blob/main/examples/2.%20Optical%20Transmitters.ipynb)\
 **Chapter 3:** [The Optical Channel](https://github.com/silasabs/CoherentOptics/blob/main/examples/3.%20Optical%20Channel.ipynb) \
@@ -26,7 +26,7 @@ Navegue entre os principais tópicos de comunicações ópticas coerentes que s�
 **Chapter 7:** [Clock Recovery](https://github.com/silasabs/CoherentOptics/blob/main/examples/7.%20Clock%20Recovery.ipynb) \
 **Chapter 8:** Performance Evaluation
 
-Acesse as implementações de diferentes algoritmos descritos no livro de referência em [/algorithms](https://github.com/silasabs/CoherentOptics/tree/main/algorithms)
+Acesse implementações de diferentes algoritmos descritos no livro de referência em [/algorithms](https://github.com/silasabs/CoherentOptics/tree/main/algorithms)
 
 <br>
 <center>
