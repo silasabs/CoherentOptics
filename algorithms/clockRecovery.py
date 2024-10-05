@@ -2,7 +2,7 @@ import numpy as np
 
 def interpolator(x, mu):
     """
-    Interpolador baseado na estrutura de Farrow
+    Interpolador cúbico baseado na estrutura de Farrow
 
     Parameters
     ----------
