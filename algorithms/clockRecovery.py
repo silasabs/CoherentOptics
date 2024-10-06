@@ -57,5 +57,5 @@ def gardnerTED(x, PSType):
     if PSType == "Nyquist":
         ek = np.abs(x[1]) ** 2 * (np.abs(x[0]) ** 2 - np.abs(x[2]) ** 2)
     else:
-        ek = np.real(np.conj(x[1]) * (x[2] - x[x[0]]))
+        ek = np.real(np.conj(x[1]) * (x[2] - x[0]))
     return ek
