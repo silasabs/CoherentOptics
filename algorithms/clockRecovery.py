@@ -31,7 +31,7 @@ def interpolator(x, mu):
         x[3] * (1/6 * mu**3 + 1/2 * mu**2 + 1/3 * mu + 0)
     )
 
-def gardnerTED(x, pulseType):
+def gardnerTED(x, isNyquist):
     """
     Gardner TED Algorithm.
 
@@ -40,8 +40,8 @@ def gardnerTED(x, pulseType):
     x : np.array
         Matriz de três amostras para o calculo do erro.
 
-    pulseType : string
-        Tipo de pulso utilizado.
+    isNyquist : bool
+        flag para sinalizar um pulso da família de nyquist.
 
     Returns
     -------
@@ -54,7 +54,7 @@ def gardnerTED(x, pulseType):
 
         [2] F. Gardner, A BPSK/QPSK timing-error detector for sampled receivers. IEEE Trans. Commun. 34(5), 423–429 (1986)
     """
-    if pulseType == "Nyquist":
+    if isNyquist:
         ek = np.abs(x[1]) ** 2 * (np.abs(x[0]) ** 2 - np.abs(x[2]) ** 2)
     else:
         ek = np.real(np.conj(x[1]) * (x[2] - x[0]))
