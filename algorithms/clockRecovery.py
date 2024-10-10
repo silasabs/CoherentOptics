@@ -46,7 +46,7 @@ def gardnerTED(x, isNyquist):
     Returns
     -------
     ek: float
-        magnitude do erro de tempo.
+        magnitude do erro.
     
     Referências
     -----------
