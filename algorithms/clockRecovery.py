@@ -33,7 +33,7 @@ def interpolator(x, mu):
 
 def gardnerTED(x, isNyquist):
     """
-    Gardner TED Algorithm.
+    Gardner TED algorithm in time domain.
 
     Parameters
     ----------
@@ -41,7 +41,7 @@ def gardnerTED(x, isNyquist):
         Matriz de três amostras para o calculo do erro.
 
     isNyquist : bool
-        flag para sinalizar um pulso da família de nyquist.
+        sinaliza um pulso da família de nyquist.
 
     Returns
     -------
