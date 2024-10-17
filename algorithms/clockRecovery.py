@@ -45,7 +45,7 @@ def gardnerTED(x, isNyquist):
 
     Returns
     -------
-    ek: float
+    error: float
         magnitude do erro.
     
     Referências
