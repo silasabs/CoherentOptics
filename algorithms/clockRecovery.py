@@ -59,3 +59,88 @@ def gardnerTED(x, isNyquist):
     else:
         error = np.real(np.conj(x[1]) * (x[2] - x[0]))
     return error
+
+def clockRecovery(x, paramCLK):
+    """
+    Executa a recuperação de clock no sinal 'x' usando uma estrutura DPLL 
+    consistindo em um interpolador, um TED, um filtro de loop e um NCO. 
+
+    Parameters
+    ----------
+    x : np.array
+        sinal de entrada obtido em 2 Sa/Símbolo.
+    
+    paramCLK : struct
+
+        - paramCLK.ki (float): Constante da parte integral do filtro de loop. (ganho integrativo)
+
+        - paramCLK.kp (float): Constante da parte proporcional do filtro de loop. (ganho proporcional)
+
+        - paramCLK.Nyquist (bool): Sinaliza um pulso de Nyquist.
+
+        - param.ppm (int): Desvio esperado da taxa máxima de clock. [ppm]
+
+    Returns
+    -------
+    tuple
+        - y (np.array): Sinal obtido após a recuperação do clock.
+        - ted_values (np.array): O sinal oscilante produzido pelo NCO.
+
+    Referências
+    -----------
+        [1] Digital Coherent Optical Systems, Architecture and Algorithms
+        
+        [2] C. Farrow, A continuously variable digital delay element, in IEEE International Symposium on Circuits and Systems, vol. 3 (1988), pp. 2641–2645
+
+        [3] F. Gardner, A BPSK/QPSK timing-error detector for sampled receivers. IEEE Trans. Commun. 34(5), 423–429 (1986)
+    """
+
+    length, nModes = x.shape
+
+    y = np.zeros((int((1 - paramCLK.ppm / 1e6) * length), nModes), dtype="complex")
+    
+    # obtenha o sinal produzido pelo NCO
+    nco_values = np.zeros(x.shape, dtype="float")
+
+    y[:2] = x[:2]
+    
+    for indMode in range(nModes):
+        
+        # parâmetros do dpll:
+        out_nco = 0.5           
+        out_LF  = 1             
+        
+        n = 2
+        fractional_interval = 0     # mun                  
+        basePoint = n               # mn                     
+        
+        integrative = out_LF 
+
+        while n < length - 1 and basePoint <= length:
+            y[n, indMode] = interpolator(x[basePoint - 2: basePoint + 2, indMode], fractional_interval)
+
+            if n % 2 == 0:
+                # obtenha o erro de tempo 
+                errorTED = gardnerTED(y[n - 2: n + 1, indMode], paramCLK.Nyquist)
+                
+                # loop PI filter
+                integrative += paramCLK.ki * errorTED
+                proportional = paramCLK.kp * errorTED
+                out_LF = proportional + integrative
+
+            t_nco = out_nco - out_LF
+
+            if t_nco > -1 and t_nco < 0:
+                basePoint += 1 # Neste caso, a próxima amostra mn+1 é usada como ponto base para a próxima atualização do interpolador
+            elif t_nco >= 0:
+                basePoint += 2 # Neste caso, uma amostra é ignorada e a outra amostra é usada como ponto base para a próxima atualização do interpolador.
+
+            out_nco = (out_nco - out_LF) % 1
+            fractional_interval = out_nco / out_LF
+
+            nco_values[n, indMode] = t_nco
+            
+            # atualiza o indexador temporal 'n'   
+            n += 1
+            
+    return y, nco_values
