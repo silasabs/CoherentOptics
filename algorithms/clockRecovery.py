@@ -78,6 +78,8 @@ def clockRecovery(x, paramCLK):
 
         - paramCLK.Nyquist (bool): Sinaliza um pulso de Nyquist.
 
+        - paramCLK.nSymbols (int): Número de símbolos transmitidos.
+
         - param.ppm (int): Desvio esperado da taxa máxima de clock. [ppm]
 
     Returns
@@ -96,6 +98,7 @@ def clockRecovery(x, paramCLK):
     """
 
     length, nModes = x.shape
+    nSymbols = paramCLK.nSymbols
 
     y = np.zeros((int((1 - paramCLK.ppm / 1e6) * length), nModes), dtype="complex")
     
@@ -142,5 +145,8 @@ def clockRecovery(x, paramCLK):
             
             # atualiza o indexador temporal 'n'   
             n += 1
-            
-    return y, nco_values
+        
+    if nSymbols * 2 < len(y):
+        return y[0:nSymbols * 2, :], nco_values
+    else:    
+        return y, nco_values
