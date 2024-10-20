@@ -138,7 +138,7 @@ def clockRecovery(x, paramCLK):
             elif eta_nco >= 0:
                 basePoint += 2 # Neste caso, uma amostra é ignorada e a outra amostra é usada como ponto base para a próxima atualização do interpolador.
 
-            out_nco = (out_nco - out_LF) % 1
+            out_nco = eta_nco % 1
             fractional_interval = out_nco / out_LF
 
             nco_values[n, indMode] = eta_nco
