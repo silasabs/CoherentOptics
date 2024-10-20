@@ -68,7 +68,7 @@ def clockRecovery(x, paramCLK):
     Parameters
     ----------
     x : np.array
-        sinal de entrada obtido em 2 Sa/Símbolo.
+        sinal de entrada com duas orientações de polarização obtido em 2 Sa/Símbolo.
     
     paramCLK : struct
 
