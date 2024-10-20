@@ -128,17 +128,17 @@ def clockRecovery(x, paramCLK):
                 proportional = paramCLK.kp * errorTED
                 out_LF = proportional + integrative
 
-            t_nco = out_nco - out_LF
+            eta_nco = out_nco - out_LF
 
-            if t_nco > -1 and t_nco < 0:
+            if eta_nco > -1 and eta_nco < 0:
                 basePoint += 1 # Neste caso, a próxima amostra mn+1 é usada como ponto base para a próxima atualização do interpolador
-            elif t_nco >= 0:
+            elif eta_nco >= 0:
                 basePoint += 2 # Neste caso, uma amostra é ignorada e a outra amostra é usada como ponto base para a próxima atualização do interpolador.
 
             out_nco = (out_nco - out_LF) % 1
             fractional_interval = out_nco / out_LF
 
-            nco_values[n, indMode] = t_nco
+            nco_values[n, indMode] = eta_nco
             
             # atualiza o indexador temporal 'n'   
             n += 1
