@@ -33,20 +33,20 @@ def interpolator(x, mu):
 
 def gardnerTED(x, isNyquist):
     """
-    Gardner TED algorithm in time domain.
+    Gardner TED algorithm.
 
     Parameters
     ----------
     x : np.array
         Matriz de três amostras para o calculo do erro.
 
-    isNyquist : bool
-        sinaliza um pulso da família de nyquist.
+    pulseType : bool
+        sinaliza um pulso da família de Nyquist.
 
     Returns
     -------
     error: float
-        magnitude do erro.
+        Magnitude do erro.
     
     Referências
     -----------
@@ -55,10 +55,33 @@ def gardnerTED(x, isNyquist):
         [2] F. Gardner, A BPSK/QPSK timing-error detector for sampled receivers. IEEE Trans. Commun. 34(5), 423–429 (1986)
     """
     if isNyquist:
-        error = np.abs(x[1]) ** 2 * (np.abs(x[0]) ** 2 - np.abs(x[2]) ** 2)
+        return np.abs(x[1]) ** 2 * (np.abs(x[0]) ** 2 - np.abs(x[2]) ** 2)
     else:
-        error = np.real(np.conj(x[1]) * (x[2] - x[0]))
-    return error
+        return np.real(np.conj(x[1]) * (x[2] - x[0]))
+
+def godardTED(x):
+    """
+    Godard TED algorithm.
+
+    Parameters
+    ----------
+    x : np.array
+        Matriz de duas amostras para o calculo do erro.
+
+    Returns
+    -------
+    error: float
+        Magnitude do erro.
+
+    Referências
+    -----------
+        [1] Digital Coherent Optical Systems, Architecture and Algorithms
+
+        [2] X. Zhou, Efficient clock and carrier recovery algorithms for single-carrier coherent optical
+            systems: a systematic review on challenges and recent progress. IEEE Signal Process Mag.
+            31(2), 35–45 (2014)
+    """
+    return np.imag(x[0] * np.conj(x[1]))
 
 def clockRecovery(x, paramCLK):
     """
