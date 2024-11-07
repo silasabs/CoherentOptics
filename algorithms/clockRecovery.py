@@ -59,30 +59,6 @@ def gardnerTED(x, isNyquist):
     else:
         return np.real(np.conj(x[1]) * (x[2] - x[0]))
 
-def godardTED(x):
-    """
-    Godard TED algorithm.
-
-    Parameters
-    ----------
-    x : np.array
-        Matriz de duas amostras para o calculo do erro.
-
-    Returns
-    -------
-    error: float
-        Magnitude do erro.
-
-    Referências
-    -----------
-        [1] Digital Coherent Optical Systems, Architecture and Algorithms
-
-        [2] X. Zhou, Efficient clock and carrier recovery algorithms for single-carrier coherent optical
-            systems: a systematic review on challenges and recent progress. IEEE Signal Process Mag.
-            31(2), 35–45 (2014)
-    """
-    return np.imag(x[0] * np.conj(x[1]))
-
 def clockRecovery(x, paramCR):
     """
     Executa a recuperação de clock no sinal 'x' usando uma estrutura DPLL 
