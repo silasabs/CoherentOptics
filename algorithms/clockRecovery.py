@@ -83,7 +83,7 @@ def godardTED(x):
     """
     return np.imag(x[0] * np.conj(x[1]))
 
-def clockRecovery(x, paramCLK):
+def clockRecovery(x, paramCR):
     """
     Executa a recuperação de clock no sinal 'x' usando uma estrutura DPLL 
     consistindo em um interpolador, um TED, um filtro de loop e um NCO. 
@@ -93,17 +93,17 @@ def clockRecovery(x, paramCLK):
     x : np.array
         sinal de entrada com duas orientações de polarização obtido em 2 Sa/Símbolo.
     
-    paramCLK : struct
+    paramCR : struct
 
-        - paramCLK.ki (float): Constante da parte integral do filtro de loop. (ganho integrativo)
+        - paramCR.ki (float): Constante da parte integral do filtro de loop. (ganho integrativo)
 
-        - paramCLK.kp (float): Constante da parte proporcional do filtro de loop. (ganho proporcional)
+        - paramCR.kp (float): Constante da parte proporcional do filtro de loop. (ganho proporcional)
 
-        - paramCLK.Nyquist (bool): Sinaliza um pulso de Nyquist.
+        - paramCR.Nyquist (bool): Sinaliza um pulso de Nyquist.
 
-        - paramCLK.nSymbols (int): Número de símbolos transmitidos.
+        - paramCR.nSymbols (int): Número de símbolos transmitidos.
 
-        - param.ppm (int): Desvio esperado da taxa máxima de clock. [ppm]
+        - paramCR.ppm (int): Desvio esperado da taxa máxima de clock. [ppm]
 
     Returns
     -------
@@ -121,9 +121,9 @@ def clockRecovery(x, paramCLK):
     """
 
     length, nModes = x.shape
-    nSymbols = paramCLK.nSymbols
+    nSymbols = paramCR.nSymbols
 
-    y = np.zeros((int((1 - paramCLK.ppm / 1e6) * length), nModes), dtype="complex")
+    y = np.zeros((int((1 - paramCR.ppm / 1e6) * length), nModes), dtype="complex")
     
     # obtenha o sinal produzido pelo NCO
     nco_values = np.zeros(x.shape, dtype="float")
@@ -142,16 +142,16 @@ def clockRecovery(x, paramCLK):
         
         integrative = out_LF 
 
-        while n < length - 1 and basePoint <= length:
+        while n < length - 1 and basePoint < length - 2:
             y[n, indMode] = interpolator(x[basePoint - 2: basePoint + 2, indMode], fractional_interval)
 
             if n % 2 == 0:
                 # obtenha o erro de tempo 
-                errorTED = gardnerTED(y[n - 2: n + 1, indMode], paramCLK.Nyquist)
+                errorTED = gardnerTED(y[n - 2: n + 1, indMode], paramCR.Nyquist)
                 
                 # loop PI filter
-                integrative += paramCLK.ki * errorTED
-                proportional = paramCLK.kp * errorTED
+                integrative += paramCR.ki * errorTED
+                proportional = paramCR.kp * errorTED
                 out_LF = proportional + integrative
 
             eta_nco = out_nco - out_LF
