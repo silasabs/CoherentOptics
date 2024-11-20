@@ -1,6 +1,6 @@
 import numpy as np
 from optic.dsp.core import pnorm
-from utils import plot4thPower, convmtx
+from algorithms.utils import plot4thPower, convmtx
 import matplotlib.pyplot as plt
 
 def fourthPower(sigRx, Fs, plotSpectrum=False):

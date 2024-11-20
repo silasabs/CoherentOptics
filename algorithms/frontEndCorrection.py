@@ -1,6 +1,6 @@
 import numpy as np
 import scipy as sp
-from utils import convmtx
+from algorithms.utils import convmtx
 
 def gsop(rLn):
     """
