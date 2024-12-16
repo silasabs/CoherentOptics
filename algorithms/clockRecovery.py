@@ -1,3 +1,4 @@
+import logging as logg
 import numpy as np
 
 def interpolator(x, mu):
@@ -105,6 +106,7 @@ def clockRecovery(x, paramCR):
     nco_values = np.zeros(x.shape, dtype="float")
 
     y[:2] = x[:2]
+    logg.info(f"Running clock recovery...")
     
     for indMode in range(nModes):
         
