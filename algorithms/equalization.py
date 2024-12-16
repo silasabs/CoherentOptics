@@ -1,3 +1,5 @@
+import logging as logg
+
 import numpy as np
 from optic.comm.modulation import grayMapping
 from optic.dsp.core import pnorm
@@ -43,30 +45,29 @@ def overlap_save(x, h, NFFT):
     if NFFT < K:
         raise ValueError('NFFT deve ser maior ou igual ao comprimento do filtro')
     
-    # determina o atraso da filtragem FIR
-    delay = (K - 1) // 2
+    D = (K-1)//2 # Filter delay
     
-    overlap = K - 1
+    discard = K - 1 # Number of samples to be discarded after IFFT (overlap samples)
 
-    # obtem a quantidade de blocos de entrada
-    B = np.ceil((L + overlap) / (NFFT - K + 1)).astype(int)
+    # total number of FFT blocks to be processed
+    B = np.ceil((L + discard) / (NFFT - K + 1)).astype(int)
 
-    # realiza o zero pad para K-1 amostras no inicio do sinal 
-    # e compensa o comprimento do último bloco
-    x = np.pad(x, (overlap, NFFT), mode='constant', constant_values=0+0j)
+    # overlap-and-save blockwise processing
+    x = np.pad(x, (discard, NFFT), mode='constant', constant_values=0+0j)
 
-    # preenche h com zeros até o comprimento NFFT
+    # pad h with zeros to length NFFT
     h = np.pad(h, (0, NFFT - K), mode='constant', constant_values=0+0j)
 
-    # buffer para os blocos de entrada
-    N = np.zeros((NFFT + delay,), dtype='complex')
+    # pre-allocate buffer
+    N = np.zeros((NFFT + D,), dtype='complex')
 
-    # sinal de saída filtrado
-    y_out = np.zeros((B * (len(N) - overlap)), dtype='complex')
+    # pre-allocate output
+    y_out = np.zeros((B * (len(N) - discard)), dtype='complex')
+    logg.info(f"Running CD compensation...")
 
-    for m in range(B):
+    for blk in range(B):
         
-        step = m * (NFFT - overlap)
+        step = blk * (NFFT - discard)
         
         # janela deslizante que extrai os blocos de entrada de comprimento NFFT.
         N = x[step:step+NFFT]
@@ -78,9 +79,9 @@ def overlap_save(x, h, NFFT):
         y = np.fft.ifft(X * H)
 
         # obtém as amostras válidas descartando a sobreposição K-1.
-        y_out[step:step+(NFFT-overlap)] = y[overlap:]
+        y_out[step:step+(NFFT-discard)] = y[discard:]
 
-    return y_out[delay:delay+L]
+    return y_out[D:D+L]
 
 def lms(u, d, taps, mu):
     """
@@ -266,6 +267,7 @@ def mimoAdaptEq(x, paramEq):
     constSymb = grayMapping(paramEq.M, paramEq.constType)
     # normaliza os símbolos da constelação
     constSymb = pnorm(constSymb)
+    logg.info(f"Running adaptive equalizer...")
     
     if paramEq.alg == 'cma':
         y, e, w = cmaUp(x, constSymb, nModes, paramEq)
