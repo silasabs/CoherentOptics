@@ -1,3 +1,5 @@
+import logging as logg
+
 import numpy as np
 import scipy as sp
 from algorithms.utils import convmtx
@@ -29,7 +31,9 @@ def gsop(rLn):
     # Tomando como referência a componente em quadratura
     rQOrt = Rin[:, 1] / np.sqrt(np.mean(Rin[:, 1] ** 2))
 
-    # Realiza a ortogonalização    
+    # Realiza a ortogonalização
+    logg.info(f"Running Gram-Schmidt orthogonalization...")
+
     rIInt = Rin[:, 0] - np.mean(Rin[:, 1] * Rin[:, 0]) * Rin[:, 1] / np.mean(Rin[:, 1] ** 2)
     rIOrt = rIInt / np.sqrt(np.mean(rIInt ** 2))
 
@@ -96,6 +100,7 @@ def deskew(rIn, SpS, Rs, N, ParamSkew):
     buffer = []     # buffer para obtensão do interpolador de lagrange 
 
     index = np.arange(0, N + 1) - np.floor((N + 1) / 2)
+    logg.info(f"Running deskew compensation...")
 
     for i in range(sigRx.shape[1]):
         
