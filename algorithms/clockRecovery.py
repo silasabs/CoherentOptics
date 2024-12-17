@@ -60,6 +60,30 @@ def gardnerTED(x, isNyquist):
     else:
         return np.real(np.conj(x[1]) * (x[2] - x[0]))
 
+def godardTED(B):
+    """
+    Godard TED algorithm
+
+    Parameters
+    ----------
+    B : np.array
+        Bloco FFT a ser processado.
+
+    Returns
+    -------
+    float
+        Estimativa do erro normalizada.
+    
+    Referências
+    -----------
+        [1] Josten, A., Baeuerle, B., Dornbierer, E., Boesser, J., Hillerkuss, D., & Leuthold, J. (2017). 
+            Modified Godard timing recovery for non-integer oversampling receivers. Applied Sciences (Switzerland), 7(7).
+    """
+    NFFT = len(B)
+    timingError = np.sum(np.imag(B[:NFFT//2] * np.conj(B[NFFT//2:])))
+    
+    return timingError/NFFT
+
 def clockRecovery(x, paramCR):
     """
     Executa a recuperação de clock no sinal 'x' usando uma estrutura DPLL 
