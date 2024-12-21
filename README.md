@@ -30,7 +30,7 @@ Acesse implementações de diferentes algoritmos descritos no livro de referênc
 
 <br>
 <center>
-    <img src="https://i.postimg.cc/2SgBsfsc/Screenshot-from-2024-12-21-19-01-02.png">
+    <img src="https://i.postimg.cc/Qt1PQh3R/Screenshot-from-2024-12-21-19-12-51.png">
 </center>
 <br>
 
