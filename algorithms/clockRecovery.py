@@ -51,7 +51,7 @@ def gardnerTED(x, isNyquist):
     
     Referências
     -----------
-        [1] Digital Coherent Optical Systems, Architecture and Algorithms
+        [1] Digital Coherent Optical Systems, Architecture and Algorithms.
 
         [2] F. Gardner, A BPSK/QPSK timing-error detector for sampled receivers. IEEE Trans. Commun. 34(5), 423–429 (1986)
     """
@@ -67,22 +67,32 @@ def godardTED(B):
     Parameters
     ----------
     B : np.array
-        Bloco FFT a ser processado.
+        Bloco FFT de N elementos.
 
     Returns
     -------
     float
-        Estimativa do erro normalizada.
+        Estimativa do erro normalizada τ_est.
+    
+    Raises
+    ------
+    ValueError
+        Caso o comprimento do bloco não seja par.
     
     Referências
     -----------
-        [1] Josten, A., Baeuerle, B., Dornbierer, E., Boesser, J., Hillerkuss, D., & Leuthold, J. (2017). 
+        [1] Digital Coherent Optical Systems, Architecture and Algorithms.
+
+        [2] Josten, A., Baeuerle, B., Dornbierer, E., Boesser, J., Hillerkuss, D., & Leuthold, J. (2017). 
             Modified Godard timing recovery for non-integer oversampling receivers. Applied Sciences (Switzerland), 7(7).
     """
-    NFFT = len(B)
-    timingError = np.sum(np.imag(B[:NFFT//2] * np.conj(B[NFFT//2:])))
+    N = len(B)
+    if N % 2 != 0:
+        raise ValueError("The block must have an even number of elements.")
     
-    return timingError/NFFT
+    τ_est = np.sum(np.imag(B[:N//2] * np.conj(B[N//2:])))
+    
+    return τ_est/N
 
 def clockRecovery(x, paramCR):
     """
