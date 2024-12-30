@@ -69,6 +69,7 @@ def overlap_save(x, h, NFFT):
         lpad = np.pad(x[:, indMode], (discard, NFFT), mode='constant', constant_values=0+0j) # overlap-and-save blockwise processing
         for blk in range(B):
             
+            # Update next block with overlap K-1
             step = blk * (NFFT - discard)
             
             # Extracts input blocks of length NFFT.
