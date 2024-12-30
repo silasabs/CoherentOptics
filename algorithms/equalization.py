@@ -64,22 +64,21 @@ def overlap_save(x, h, NFFT):
     y_out = np.zeros((B * (len(N) - discard), nModes), dtype='complex') # pre-allocate output
 
     for indMode in range(nModes):
-        # overlap-and-save blockwise processing
-        lpad = np.pad(x[:, indMode], (discard, NFFT), mode='constant', constant_values=0+0j)
+        lpad = np.pad(x[:, indMode], (discard, NFFT), mode='constant', constant_values=0+0j) # overlap-and-save blockwise processing
         for blk in range(B):
             
             step = blk * (NFFT - discard)
             
-            # Extrai os blocos de entrada de comprimento NFFT.
+            # Extracts input blocks of length NFFT.
             N = lpad[step:step+NFFT]
 
             H = fft(h)
             X = fft(N)
 
-            # convolução circular de cada bloco com a responta ao impulso do filtro.
+            # circular convolution of each block with the impulse response of the filter.
             y = ifft(X * H)
 
-            # obtém as amostras válidas descartando a sobreposição K-1.
+            # obtains the valid samples by discarding the K-1 overlap.
             y_out[step:step+(NFFT-discard), indMode] = y[discard:]
 
     # select the output corresponding to the polarizations
