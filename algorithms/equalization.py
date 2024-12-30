@@ -1,6 +1,7 @@
 import logging as logg
 
 import numpy as np
+from numpy.fft import fft, ifft
 from optic.comm.modulation import grayMapping
 from optic.dsp.core import pnorm
 from tqdm.notebook import tqdm
@@ -38,50 +39,54 @@ def overlap_save(x, h, NFFT):
         [1] Processamento Digital de Sinais Paulo S. R. Diniz Eduardo A. B. da Silva Sergio L. Netto
             Projeto e Análise de Sistemas. 2º Ed.
     """
+    try:
+        nModes = x.shape[1]
+    except IndexError:
+        nModes = 1
+        x = x.reshape((x.size, nModes))
 
-    K = len(h)
-    L = len(x)
+    K = len(h) # filter length
+    L = len(x) # signal length
 
     if NFFT < K:
         raise ValueError('NFFT deve ser maior ou igual ao comprimento do filtro')
     
-    D = (K-1)//2 # Filter delay
-    
+    D = (K-1)//2    # Filter delay
     discard = K - 1 # Number of samples to be discarded after IFFT (overlap samples)
 
     # total number of FFT blocks to be processed
     B = np.ceil((L + discard) / (NFFT - K + 1)).astype(int)
 
-    # overlap-and-save blockwise processing
-    x = np.pad(x, (discard, NFFT), mode='constant', constant_values=0+0j)
-
     # pad h with zeros to length NFFT
     h = np.pad(h, (0, NFFT - K), mode='constant', constant_values=0+0j)
+    
+    N = np.zeros((NFFT + D,), dtype='complex') # pre-allocate buffer
+    y_out = np.zeros((B * (len(N) - discard), nModes), dtype='complex') # pre-allocate output
 
-    # pre-allocate buffer
-    N = np.zeros((NFFT + D,), dtype='complex')
+    for indMode in range(nModes):
+        # overlap-and-save blockwise processing
+        lpad = np.pad(x[:, indMode], (discard, NFFT), mode='constant', constant_values=0+0j)
+        for blk in range(B):
+            
+            step = blk * (NFFT - discard)
+            
+            # Extrai os blocos de entrada de comprimento NFFT.
+            N = lpad[step:step+NFFT]
 
-    # pre-allocate output
-    y_out = np.zeros((B * (len(N) - discard)), dtype='complex')
-    logg.info(f"Running CD compensation...")
+            H = fft(h)
+            X = fft(N)
 
-    for blk in range(B):
-        
-        step = blk * (NFFT - discard)
-        
-        # janela deslizante que extrai os blocos de entrada de comprimento NFFT.
-        N = x[step:step+NFFT]
+            # convolução circular de cada bloco com a responta ao impulso do filtro.
+            y = ifft(X * H)
 
-        H = np.fft.fft(h)
-        X = np.fft.fft(N)
+            # obtém as amostras válidas descartando a sobreposição K-1.
+            y_out[step:step+(NFFT-discard), indMode] = y[discard:]
 
-        # obtém a convolução circular de cada bloco com a responta ao impulso do filtro.
-        y = np.fft.ifft(X * H)
-
-        # obtém as amostras válidas descartando a sobreposição K-1.
-        y_out[step:step+(NFFT-discard)] = y[discard:]
-
-    return y_out[D:D+L]
+    # select the output corresponding to the polarizations
+    if nModes == 1:
+        return y_out[D:D+L].reshape(-1)
+    else:
+        return y_out[D:D+L]
 
 def lms(u, d, taps, mu):
     """
