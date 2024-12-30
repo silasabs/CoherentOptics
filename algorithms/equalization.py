@@ -63,6 +63,8 @@ def overlap_save(x, h, NFFT):
     N = np.zeros((NFFT + D,), dtype='complex') # pre-allocate buffer
     y_out = np.zeros((B * (len(N) - discard), nModes), dtype='complex') # pre-allocate output
 
+    logg.info(f"Compensating for chromatic dispersion...")
+
     for indMode in range(nModes):
         lpad = np.pad(x[:, indMode], (discard, NFFT), mode='constant', constant_values=0+0j) # overlap-and-save blockwise processing
         for blk in range(B):
