@@ -30,7 +30,7 @@ Acesse implementações de diferentes algoritmos descritos no livro de referênc
 
 <br>
 <center>
-    <img src="https://i.postimg.cc/Vv7sQLQp/Screenshot-from-2024-12-22-10-39-25.png">
+    <img src="https://i.postimg.cc/fb3dKfSw/DSP-Algorithms.png">
 </center>
 <br>
 
