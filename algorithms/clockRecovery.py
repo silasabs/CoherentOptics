@@ -72,7 +72,7 @@ def godardTED(B):
     Returns
     -------
     float
-        Estimativa do erro normalizada τ_est.
+        Estimativa do erro do bloco normalizada.
     
     Raises
     ------
@@ -90,9 +90,9 @@ def godardTED(B):
     if N % 2 != 0:
         raise ValueError("The block must have an even number of elements.")
     
-    τ_est = np.sum(np.imag(B[:N//2] * np.conj(B[N//2:])))
+    ted = np.sum(np.imag(B[:N//2] * np.conj(B[N//2:])))
     
-    return τ_est/N
+    return ted/N
 
 def clockRecovery(x, paramCR):
     """
@@ -135,49 +135,43 @@ def clockRecovery(x, paramCR):
     nSymbols = paramCR.nSymbols
 
     y = np.zeros((int((1 - paramCR.ppm / 1e6) * length), nModes), dtype="complex")
+    nco_values = np.zeros(x.shape, dtype="float") # pre-llocate NCO values
     
-    # obtenha o sinal produzido pelo NCO
-    nco_values = np.zeros(x.shape, dtype="float")
-
     y[:2] = x[:2]
-    logg.info(f"Running clock recovery...")
     
     for indMode in range(nModes):
-        
-        # parâmetros do dpll:
-        out_nco = 0.5           
-        out_LF  = 1             
+        out_nco = 0           
+        loopFilterOut  = 1             
         
         n = 2
-        fractional_interval = 0     # mun                  
-        basePoint = n               # mn                     
+        mu = 0                      
+        basePoint = n                   
         
-        integrative = out_LF 
+        integrative = loopFilterOut 
 
         while n < length - 1 and basePoint < length - 2:
-            y[n, indMode] = interpolator(x[basePoint - 2: basePoint + 2, indMode], fractional_interval)
+            y[n, indMode] = interpolator(x[basePoint - 2: basePoint + 2, indMode], mu)
 
             if n % 2 == 0:
-                # obtenha o erro de tempo 
                 errorTED = gardnerTED(y[n - 2: n + 1, indMode], paramCR.Nyquist)
                 
                 # loop PI filter
                 integrative += paramCR.ki * errorTED
                 proportional = paramCR.kp * errorTED
-                out_LF = proportional + integrative
+                loopFilterOut = proportional + integrative
 
-            eta_nco = out_nco - out_LF
-
-            if eta_nco > -1 and eta_nco < 0:
+            out_nco -= loopFilterOut
+            
+            if out_nco > -1 and out_nco < 0:
                 basePoint += 1 # Neste caso, a próxima amostra mn+1 é usada como ponto base para a próxima atualização do interpolador
-            elif eta_nco >= 0:
+            elif out_nco >= 0:
                 basePoint += 2 # Neste caso, uma amostra é ignorada e a outra amostra é usada como ponto base para a próxima atualização do interpolador.
 
-            out_nco = eta_nco % 1
-            fractional_interval = out_nco / out_LF
-
-            nco_values[n, indMode] = eta_nco
+            out_nco = out_nco % 1
+            mu = out_nco/loopFilterOut
             
+            nco_values[n, indMode] = out_nco
+
             # atualiza o indexador temporal 'n'   
             n += 1
         
