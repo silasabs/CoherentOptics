@@ -17,7 +17,7 @@ def overlap_save(x, h, NFFT):
         Sinal de entrada.
 
     h : np.array
-        Coeficientes do filtro.
+        Coeficientes do filtro como uma matriz unidimensional.
 
     NFFT : int
         O tamanho da FFT deve ser maior que a ordem do filtro.
@@ -67,7 +67,7 @@ def overlap_save(x, h, NFFT):
 
     # overlap-and-save blockwise processing
     for indMode in range(nModes):
-        lpad = np.pad(x[:, indMode], (discard, NFFT), mode='constant', constant_values=0+0j) 
+        lpad = np.pad(x[:, indMode], (discard, NFFT), mode='constant', constant_values=((0+0j, 0+0j))) 
         for blk in range(B):
             
             # Update next block with overlap K-1
