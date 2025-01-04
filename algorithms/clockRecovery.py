@@ -77,7 +77,7 @@ def godardTED(B):
     Raises
     ------
     ValueError
-        Caso o comprimento do bloco não seja par.
+        Se o comprimento da FFT não for uma potência de 2.
     
     Referências
     -----------
