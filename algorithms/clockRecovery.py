@@ -88,7 +88,7 @@ def godardTED(B):
     """
     N = len(B)
     if N % 2 != 0:
-        raise ValueError("The block must have an even number of elements.")
+        raise ValueError("The FFT length must be a power of 2")
     
     ted = np.sum(np.imag(B[:N//2] * np.conj(B[N//2:])))
     
