@@ -1,4 +1,5 @@
 import numpy as np
+from numpy.fft import fft, fftfreq
 from optic.dsp.core import pnorm
 from algorithms.utils import plot4thPower, convmtx
 import matplotlib.pyplot as plt
@@ -6,7 +7,7 @@ import matplotlib.pyplot as plt
 def fourthPower(sigRx, Fs, plotSpectrum=False):
     """
     Compensa o deslocamento de frequência utilizando o método
-    de quarta potência.
+    de quarta potência. 
 
     Parameters
     ----------
@@ -14,7 +15,7 @@ def fourthPower(sigRx, Fs, plotSpectrum=False):
         Sinal a ser compensado o desvio de frequência.
 
     Fs : int
-        taxa de amostragem.
+        Frequência de amostragem do sinal.
 
     plotSpectrum : bool, optional
         Retorna o espectro do sinal em quarta potência, by default False
@@ -31,19 +32,20 @@ def fourthPower(sigRx, Fs, plotSpectrum=False):
     """
     
     try:
-        nModes = sigRx.shape[1]
+        sigRx.shape[1]
     except IndexError:
         sigRx = sigRx.reshape(len(sigRx), 1)
     
-    NFFT     = sigRx.shape[0]
-    axisFreq = Fs * np.fft.fftfreq(NFFT)
-    
+    NFFT = sigRx.shape[0]
+    axisFreq = Fs * fftfreq(NFFT)
+
+    nModes = sigRx.shape[1]
     time = np.arange(0, sigRx.shape[0]) * 1/Fs
 
     for indMode in range(nModes):
         
         # Elevar a quarta potência e aplica a FFT
-        fourth_power = np.fft.fft(sigRx[:, indMode]**4)
+        fourth_power = fft(sigRx[:, indMode]**4)
 
         # Inferir o índice de valor máximo na frequência
         indFO = np.argmax(np.abs(fourth_power))
@@ -52,11 +54,11 @@ def fourthPower(sigRx, Fs, plotSpectrum=False):
         indFO = axisFreq[indFO]/4       
         
         # Compense o deslocamento de frequência
-        sigRx[:, indMode] *= np.exp(-1j * 2 * np.pi * indFO * time)
+        sigRx[:, indMode] *= np.exp(-2j * np.pi * indFO * time)
     
-    # Plote o espectro da quarta potência de um dos modos.
     if plotSpectrum:
-        plot4thPower(sigRx, axisFreq)
+        # Plote o espectro da quarta potência em um modo de polarização.
+        plot4thPower(sigRx[:, 0], axisFreq)
         
     return sigRx, indFO
 
