@@ -1,4 +1,5 @@
 import numpy as np
+from numpy.fft import fft
 import scipy as sp
 import matplotlib.pyplot as plt
 
@@ -68,10 +69,13 @@ def plot4thPower(sigRx, axisFreq):
         Sinal de entrada.
 
     axisFreq : np.array
-        Eixo de frequências.
+        Eixo de frequências normalizadas.
     """
+    f4 = 10*np.log10(np.abs(fft(sigRx[:, 0]**4)))
+    fo = np.argmax(f4)
 
-    plt.plot(axisFreq, 10*np.log10(np.abs(np.fft.fft(sigRx[:, 0]**4))), label=r"$|FFT(s[k]^4)|$")
+    plt.plot(axisFreq, f4, label=r"$|FFT(s[k]^4)|$")
+    plt.plot(axisFreq[fo], f4[fo], 'x', label=r"$4f_0$")
     plt.ylabel('Amplitude [dB]')
     plt.xlabel(r'$f$')
     plt.legend()
