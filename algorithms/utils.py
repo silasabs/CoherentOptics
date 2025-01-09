@@ -71,7 +71,7 @@ def plot4thPower(sigRx, axisFreq):
     axisFreq : np.array
         Eixo de frequências normalizadas.
     """
-    f4 = 10*np.log10(np.abs(fft(sigRx[:, 0]**4)))
+    f4 = 10*np.log10(np.abs(fft(sigRx**4)))
     fo = np.argmax(f4)
 
     plt.plot(axisFreq, f4, label=r"$|FFT(s[k]^4)|$")
