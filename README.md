@@ -12,7 +12,7 @@ As anotações foram realizadas com o intuito de facilitar a compreensão dos co
     $ cd CoherentOptics
     
     # instale as dependências necessárias
-    $ conda install --file requirements.txt    
+    $ pip install -r requirements.txt    
 
 ## Sumário do Material
 
